@@ -1,0 +1,94 @@
+Project Tripbuddy {
+    database_type: 'mssql'
+    Note: 'User service of project Tripbuddy'
+}
+
+Table USER.USER_HEAD {
+    USER_ID uniqueidentifier [pk]
+    FIRST_NAME nvarchar(20)
+    LAST_NAME nvarchar(20)
+    EMAIL nvarchar(255)
+    PHONE_NUMBER nvarchar(20)
+    LOCATION_ID uniqueidentifier
+    LOCATION_NAME nvarchar(255)
+    DOB datetime2
+    PIC_ID uniqueidentifier
+    IS_ACTIVIE bit [default: 0]
+}   
+
+Table USER.USER_SPOT {
+    USER_ID uniqueidentifier [unique, not null]
+    REWARD_POINT bigint [default: 0]
+    NO_TRIP bigint [default: 0, note: 'Number of trip']
+    NO_PLACE bigint [default: 0, note: 'Number of place']
+    RATING smallint [default: 0, note: "Average rating from user's review"]
+}
+
+Ref {
+  USER.USER_SPOT.USER_ID - USER.USER_HEAD.USER_ID
+}
+
+Table SPOT.ATR_HEAD {
+  ATR_ID uniqueidentifier [pk]
+  DESCRIPTION nvarchar
+  CONTITNENT nvarchar(5)
+  SUB_CONTITNENT nvarchar(5)
+  COUNTRY nvarchar(50)
+  PIC_ID uniqueidentifier
+}
+
+Table SPOT.DES_HEAD {
+  DES_ID uniqueidentifier [pk]
+  ATR_ID uniqueidentifier [not null]
+  DES_NAME nvarchar(50)
+  DESCRIPTION nvarchar
+  PIC_ID uniqueidentifier
+  NO_VISTED int [default: 0, note: 'Number of user add this description into their schedule']
+}
+
+Table SPOT.PLC_HEAD {
+  PLC_ID uniqueidentifier [pk]
+  ATR_ID uniqueidentifier [not null]
+  DES_ID uniqueidentifier [not null]
+  PLC_NAME nvarchar(50)
+  DESCRIPTION nvarchar
+  LONGITUDE double
+  LATITUDE double
+  PIC_ID uniqueidentifier
+}
+
+Table SPOT.ATR_CONTENT {
+  CONTENT_ID uniqueidentifier [pk]
+  ATR_ID uniqueidentifier [not null]
+  DES_ID uniqueidentifier [not null]
+  CONTENT_TYPE nvarchar(5)
+  TITLE nvarchar(100)
+  CONTENT nvarchar
+}
+
+Table SPOT.CONSTANT {
+  CONSTANT_CODE nvarchar(5)
+  CONSTANT_TYPE nvarchar(30)
+  CONSTANT_NAME nvarchar(30)
+}
+
+Ref {
+  SPOT.ATR_HEAD.ATR_ID > SPOT.DES_HEAD.ATR_ID
+}
+
+Ref {
+  SPOT.ATR_HEAD.ATR_ID > SPOT.PLC_HEAD.ATR_ID
+}
+
+Ref {
+  SPOT.DES_HEAD.DES_ID > SPOT.PLC_HEAD.DES_ID
+}
+
+Ref {
+  SPOT.ATR_HEAD.ATR_ID > SPOT.ATR_CONTENT.ATR_ID
+}
+
+Ref {
+  SPOT.DES_HEAD.DES_ID > SPOT.ATR_CONTENT.DES_ID
+}
+

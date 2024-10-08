@@ -1,0 +1,6 @@
+@SpotService_HostAddress = http://localhost:5053
+
+GET {{SpotService_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

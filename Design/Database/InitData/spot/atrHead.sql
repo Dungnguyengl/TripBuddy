@@ -1,0 +1,132 @@
+TRUNCATE TABLE SPOT.ATR_HEAD
+
+INSERT INTO SPOT.ATR_HEAD (DESCRIPTION, CONTITNENT, SUB_CONTITNENT, COUNTRY) VALUES
+-- Africa
+(N'Africa''s most populous country, rich in culture and natural resources.', 'AF', NULL, 'Nigeria'),
+(N'Famous for its ancient pyramids and the Nile River.', 'AF', NULL, 'Egypt'),
+(N'Known for its diverse landscapes and apartheid history.', 'AF', NULL, 'South Africa'),
+(N'Renowned for its wildlife and safaris.', 'AF', NULL, 'Kenya'),
+(N'Known for its gold resources and historic slave castles.', 'AF', NULL, 'Ghana'),
+(N'Famous for its historic cities and vibrant culture.', 'AF', NULL, 'Morocco'),
+(N'Known for its ancient history and coffee.', 'AF', NULL, 'Ethiopia'),
+(N'Home to Mount Kilimanjaro and stunning wildlife.', 'AF', NULL, 'Tanzania'),
+(N'Famous for its mountain gorillas and Lake Victoria.', 'AF', NULL, 'Uganda'),
+(N'The largest country in Africa with rich history and diverse landscapes.', 'AF', NULL, 'Algeria'),
+
+-- North America
+(N'Known for its diversity and global influence.', 'NA', NULL, 'United States'),
+(N'Famous for its natural beauty and multicultural cities.', 'NA', NULL, 'Canada'),
+(N'Renowned for its culture, food, and history.', 'NA', NULL, 'Mexico'),
+(N'Known for its ancient Mayan sites and volcanoes.', 'NA', NULL, 'Guatemala'),
+(N'Famous for its culture, music, and history.', 'NA', NULL, 'Cuba'),
+(N'Renowned for its canal and biodiversity.', 'NA', NULL, 'Panama'),
+(N'Known for its music, beaches, and culture.', 'NA', NULL, 'Jamaica'),
+(N'Famous for its Mayan ruins and natural beauty.', 'NA', NULL, 'Honduras'),
+(N'Renowned for its biodiversity and eco-tourism.', 'NA', NULL, 'Costa Rica'),
+(N'Known for its beaches and music.', 'NA', NULL, 'Dominican Republic'),
+
+-- South America
+(N'Famous for its carnival, football, and Amazon rainforest.', 'SA', NULL, 'Brazil'),
+(N'Known for its tango, wine, and landscapes.', 'SA', NULL, 'Argentina'),
+(N'Renowned for its coffee and cultural heritage.', 'SA', NULL, 'Colombia'),
+(N'Famous for Machu Picchu and Incan history.', 'SA', NULL, 'Peru'),
+(N'Known for its diverse landscapes from deserts to glaciers.', 'SA', NULL, 'Chile'),
+(N'Renowned for the Galápagos Islands and Andes mountains.', 'SA', NULL, 'Ecuador'),
+(N'Famous for its salt flats and indigenous culture.', 'SA', NULL, 'Bolivia'),
+(N'Known for its beaches and laid-back lifestyle.', 'SA', NULL, 'Uruguay'),
+(N'Renowned for its culture and natural beauty.', 'SA', NULL, 'Paraguay'),
+(N'Famous for its oil wealth and natural attractions.', 'SA', NULL, 'Venezuela'),
+
+-- Australia (Oceania)
+(N'Known for its unique wildlife and natural wonders.', 'AU', NULL, 'Australia'),
+(N'Famous for its landscapes and Maori culture.', 'AU', NULL, 'New Zealand'),
+(N'Renowned for its cultural diversity and islands.', 'AU', NULL, 'Papua New Guinea'),
+(N'Known for its stunning beaches and coral reefs.', 'AU', NULL, 'Fiji'),
+(N'Famous for its culture and natural beauty.', 'AU', NULL, 'Samoa'),
+(N'Renowned for its volcanoes and diving spots.', 'AU', NULL, 'Vanuatu'),
+(N'Known for its WWII history and islands.', 'AU', NULL, 'Solomon Islands'),
+(N'Famous for its Polynesian culture and islands.', 'AU', NULL, 'Tonga'),
+(N'Renowned for its atolls and marine life.', 'AU', NULL, 'Kiribati'),
+(N'Known for its remote islands and traditional culture.', 'AU', NULL, 'Tuvalu'),
+
+-- South Asia
+(N'A diverse country known for its rich culture, history, and spices.', 'AS', 'SA', 'India'),
+(N'Known for its landscapes and historical sites.', 'AS', 'SA', 'Pakistan'),
+(N'Famous for its waterways and vibrant culture.', 'AS', 'SA', 'Bangladesh'),
+(N'An island nation known for its tea plantations and ancient ruins.', 'AS', 'SA', 'Sri Lanka'),
+(N'Home to Mount Everest and rich Buddhist heritage.', 'AS', 'SA', 'Nepal'),
+(N'Famous for its monasteries and Gross National Happiness.', 'AS', 'SA', 'Bhutan'),
+(N'Known for its stunning beaches and coral reefs.', 'AS', 'SA', 'Maldives'),
+(N'Rich in history and mountainous terrains.', 'AS', 'SA', 'Afghanistan'),
+(N'Known for its temples and diverse cultures.', 'AS', 'SEA', 'Myanmar'),
+(N'Renowned for its delicious food and vibrant markets.', 'AS', 'SA', 'Maldives'),
+
+-- Southeast Asia
+(N'Known for its lush landscapes and bustling cities.', 'AS', 'SEA', 'Vietnam'),
+(N'Famous for its beaches, temples, and cuisine.', 'AS', 'SEA', 'Thailand'),
+(N'A blend of modernity and cultural diversity.', 'AS', 'SEA', 'Malaysia'),
+(N'The world''s largest archipelago with diverse cultures.', 'AS', 'SEA', 'Indonesia'),
+(N'Known for its islands and vibrant festivals.', 'AS', 'SEA', 'Philippines'),
+(N'A global financial hub with a melting pot of cultures.', 'AS', 'SEA', 'Singapore'),
+(N'Famous for Angkor Wat and rich history.', 'AS', 'SEA', 'Cambodia'),
+(N'Known for its mountainous terrain and Buddhist monasteries.', 'AS', 'SEA', 'Laos'),
+(N'Wealthy nation known for its mosques and oil.', 'AS', 'SEA', 'Brunei'),
+(N'Known for its history and scenic beaches.', 'AS', 'SEA', 'Timor-Leste'),
+
+-- East Asia
+(N'The most populous country with ancient history and booming economy.', 'AS', 'EA', 'China'),
+(N'Known for its technology, culture, and traditions.', 'AS', 'EA', 'Japan'),
+(N'Famous for its pop culture and technology.', 'AS', 'EA', 'South Korea'),
+(N'Known for its isolation and strict regime.', 'AS', 'EA', 'North Korea'),
+(N'Renowned for its electronics industry and vibrant culture.', 'AS', 'EA', 'Taiwan'),
+(N'Known for its nomadic culture and vast steppes.', 'AS', 'EA', 'Mongolia'),
+(N'A global financial center with a unique blend of East and West.', 'AS', 'EA', 'Hong Kong'),
+(N'Known for its casinos and Portuguese heritage.', 'AS', 'EA', 'Macau'),
+
+-- West Asia (Middle East)
+(N'Known for its oil wealth and religious significance.', 'AS', 'WA', 'Saudi Arabia'),
+(N'Famous for its Persian culture and historical sites.', 'AS', 'WA', 'Iran'),
+(N'Rich in ancient history and heritage.', 'AS', 'WA', 'Iraq'),
+(N'Known for its religious significance and modern technology.', 'AS', 'WA', 'Israel'),
+(N'Famous for Petra and historical sites.', 'AS', 'WA', 'Jordan'),
+(N'Renowned for its culture and Mediterranean coast.', 'AS', 'WA', 'Lebanon'),
+(N'Known for its ancient cities and diverse cultures.', 'AS', 'WA', 'Syria'),
+(N'A bridge between Europe and Asia with rich history.', 'AS', 'WA', 'Turkey'),
+(N'Known for its modern cities and oil wealth.', 'AS', 'WA', 'United Arab Emirates'),
+(N'Rich nation known for its futuristic architecture.', 'AS', 'WA', 'Qatar'),
+
+-- Central Asia
+(N'Known for its vast steppes and natural resources.', 'AS', 'CA', 'Kazakhstan'),
+(N'Famous for its Silk Road cities and Islamic architecture.', 'AS', 'CA', 'Uzbekistan'),
+(N'Renowned for its deserts and gas reserves.', 'AS', 'CA', 'Turkmenistan'),
+(N'Known for its mountains and nomadic culture.', 'AS', 'CA', 'Kyrgyzstan'),
+(N'Famous for its rugged terrain and Persian culture.', 'AS', 'CA', 'Tajikistan'),
+(N'Known for its oil and the Caspian Sea.', 'AS', 'CA', 'Azerbaijan'),
+(N'Rich in history and ancient churches.', 'AS', 'CA', 'Armenia'),
+(N'Known for its wine and mountainous landscapes.', 'AS', 'CA', 'Georgia'),
+(N'Rich in history and mountainous terrains.', 'AS', 'CA', 'Afghanistan'),
+(N'Vast nation with diverse cultures and rich history.', 'AS', 'CA', 'Russia'),
+
+-- Southern Europe
+(N'Known for its art, history, and cuisine.', 'EU', 'SE', 'Italy'),
+(N'Famous for its beaches, architecture, and festivals.', 'EU', 'SE', 'Spain'),
+(N'Renowned for its ancient ruins and islands.', 'EU', 'SE', 'Greece'),
+(N'Known for its maritime history and wine.', 'EU', 'SE', 'Portugal'),
+(N'Famous for its coastline and historic towns.', 'EU', 'SE', 'Croatia'),
+(N'Known for its diverse culture and history.', 'EU', 'SE', 'Bosnia and Herzegovina'),
+(N'Rich in history and natural beauty.', 'EU', 'SE', 'Serbia'),
+(N'Famous for its mountains and coast.', 'EU', 'SE', 'Montenegro'),
+(N'Known for its beaches and history.', 'EU', 'SE', 'Albania'),
+(N'Famous for its history and landscapes.', 'EU', 'SE', 'North Macedonia'),
+
+-- Northern Europe
+(N'Known for its fjords and natural beauty.', 'EU', 'NE', 'Norway'),
+(N'Famous for its innovation and landscapes.', 'EU', 'NE', 'Sweden'),
+(N'Renowned for its education system and natural beauty.', 'EU', 'NE', 'Finland'),
+(N'Known for its high quality of life and design.', 'EU', 'NE', 'Denmark'),
+(N'Famous for its geysers and hot springs.', 'EU', 'NE', 'Iceland'),
+(N'Known for its digital society and medieval architecture.', 'EU', 'NE', 'Estonia'),
+(N'Renowned for its forests and beaches.', 'EU', 'NE', 'Latvia'),
+(N'Famous for its history and landscapes.', 'EU', 'NE', 'Lithuania'),
+(N'Known for its green landscapes and culture.', 'EU', 'NE', 'Ireland'),
+(N'Famous for its history, culture, and landmarks.', 'EU', 'NE', 'United Kingdom');
