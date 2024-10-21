@@ -12,7 +12,7 @@ var eurekaLocation = eureka.GetEndpoint("http");
 var gateway = builder.AddProject<APIGateway>("gateway")
     .WithReference(eureka);
 
-var authentication = builder.AddProject<Authentication>("authen", "WSL")
+var authentication = builder.AddProject<Authentication>("authen")
     .WithReference(eureka)
     .WithReference(db);
 
