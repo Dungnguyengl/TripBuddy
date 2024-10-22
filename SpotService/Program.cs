@@ -1,7 +1,4 @@
-
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using System.Text;
+using CommonService.Extentions;
 
 namespace SpotService
 {
@@ -16,10 +13,11 @@ namespace SpotService
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-           .ConfigureWebHostDefaults(webBuilder =>
-           {
-               webBuilder.UseStartup<Startup>();
-           });
+                .AddRabbitMQConfiguration("spot-config-queue")
+                .ConfigureWebHostDefaults(webBuilder =>
+                   {
+                       webBuilder.UseStartup<Startup>();
+                   });
         }
     }
 }

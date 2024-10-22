@@ -1,0 +1,33 @@
+{
+    "global": {
+        "eureka": {
+            "client": {
+                "serviceUrl": "http://localhost:32769/eureka/",
+                "shouldFetchRegistry": "true",
+                "shouldRegisterWithEureka": "true",
+                "validateCertificates": "false"
+            }
+        },
+        "ConnectionStrings": {
+            "mssql": "Server=localhost,32768;Database=TRIP_BUDDY;User Id=sa;Password=admin@123;TrustServerCertificate=True;"
+        }
+    },
+    "gateway": {
+        "Jwt": {
+            "Key": "Tripbuddy_jwt_key_0HN7A2PJBRQA00HN7A2R760TU9",
+            "Issuer": "Tripbuddy",
+            "ExpireTime": 300
+        }
+    },
+    "auth": {
+        "Jwt": {
+            "Key": "Tripbuddy_jwt_key_0HN7A2PJBRQA00HN7A2R760TU9",
+            "Issuer": "Tripbuddy",
+            "ExpireTime": 300
+        }
+    },
+    "mobile": {},
+    "spot": {},
+    "tripper": {},
+    "web": {}
+}
