@@ -9,9 +9,11 @@ namespace ConfigurationService.Services
         private readonly string _filePath = "configurations.json";
         private readonly ConnectionFactory _factory;
 
-        public ConfigurationService()
+        public ConfigurationService(IConfiguration cfg)
         {
-            _factory = new ConnectionFactory() { HostName = "localhost" };
+            var host = cfg.GetValue<string>("RABBITMQ_HOST") ?? "localhost";
+            var port = cfg.GetValue<int?>("RABBITMQ_PORT") ?? 5672;
+            _factory = new ConnectionFactory() { HostName = host, Port = port };
             PushAllSectionToRabbitMQ();
         }
 
@@ -59,7 +61,7 @@ namespace ConfigurationService.Services
                 .Where(key => !key.IsNullOrEmpty() && key != "global")
                 .Distinct();
 
-            using var connection = _factory.CreateConnection();
+            using var connection = RetryExtentions.Retry(() => _factory.CreateConnection()) ?? throw new ArgumentNullException();
             using var channel = connection.CreateModel();
 
             foreach (var section in sections)

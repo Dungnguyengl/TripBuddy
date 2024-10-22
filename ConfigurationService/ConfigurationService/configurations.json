@@ -2,7 +2,7 @@
     "global": {
         "eureka": {
             "client": {
-                "serviceUrl": "http://localhost:32769/eureka/",
+                "serviceUrl": "http://localhost:8761/eureka/",
                 "shouldFetchRegistry": "true",
                 "shouldRegisterWithEureka": "true",
                 "validateCertificates": "false"
