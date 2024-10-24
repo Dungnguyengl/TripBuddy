@@ -62,11 +62,13 @@ namespace CommonService.Services
             {
                 Content = JsonContent.Create(param),
             };
-            var result = await Client.SendAsync(req);
+            var result = await RetryExtentions.Retry(async () => await Client.SendAsync(req));
+            var resContentRaw = await result.Content.ReadAsStringAsync();
+            var content = JsonConvert.DeserializeObject<TResult>(resContentRaw);
 
             return new Response<TResult>
             {
-                Content = await result.Content.ReadFromJsonAsync<TResult>(),
+                Content = content,
                 Code = result.StatusCode
             };
         }

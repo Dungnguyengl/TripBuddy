@@ -25,11 +25,7 @@ namespace TripperService
                 ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
             });
 
-            services.AddServiceDiscovery(ops =>
-            {
-                ops.UseEureka();
-            });
-
+            services.AddDiscoveryClient(Configuration);
             services.AddHttpClient("APIGATEWAY")
                 .AddServiceDiscovery()
                 .AddTypedClient<IInternalService, InternalService>();

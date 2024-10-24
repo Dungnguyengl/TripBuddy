@@ -1,30 +1,21 @@
 ﻿using Authentication.Model;
+using Authentication.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace Authentication.Controllers
 {
     [Route("api")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(UserManager<AuthenticationUser> userManager, SignInManager<AuthenticationUser> signInManager, IConfiguration configuration, TokenService tokenService) : ControllerBase
     {
-        private readonly UserManager<AuthenticationUser> _userManager;
-        private readonly SignInManager<AuthenticationUser> _signInManager;
-        private readonly IConfiguration _configuration;
-
-        public AuthController(UserManager<AuthenticationUser> userManager, SignInManager<AuthenticationUser> signInManager, IConfiguration configuration)
-        {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _configuration = configuration;
-        }
+        private readonly UserManager<AuthenticationUser> _userManager = userManager;
+        private readonly SignInManager<AuthenticationUser> _signInManager = signInManager;
+        private readonly IConfiguration _configuration = configuration;
+        private readonly TokenService _tokenService = tokenService;
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterModel model)
+        public async Task<IActionResult> Register([FromBody] RegisterCommand model)
         {
             var user = new AuthenticationUser { UserName = model.Email, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
@@ -38,58 +29,74 @@ namespace Authentication.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] LoginModel model)
+        public async Task<IActionResult> Login([FromBody] LoginCommand model)
         {
-            var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+            var user = await _userManager.FindByEmailAsync(model.Email) ?? throw new Exception();
+            var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, false);
 
             if (result.Succeeded)
             {
-                var appUser = await _userManager.FindByEmailAsync(model.Email);
-                var token = GenerateJwtToken(appUser);
-                return Ok(new { Token = token });
+                var token = await _tokenService.GenerateJwtTokenAsync(user);
+                var refreshToken = _tokenService.GenerateRefreshToken();
+
+                user.RefreshToken = refreshToken;
+                user.RefreshTokenExpire = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:Refresh_Expire"]));
+
+                await _userManager.UpdateAsync(user);
+                return Ok(new
+                {
+                    AccessToken = token,
+                    RefreshToken = refreshToken
+                });
             }
 
             return Unauthorized();
         }
 
-        private string GenerateJwtToken(AuthenticationUser user)
+        [HttpPost("refresh")]
+        public async Task<IActionResult> Refresh([FromBody] RefresCommand command)
         {
-            if (user is null)
+            var principal = _tokenService.GetPrincipalFromToken(command.AccessToken);
+            var user = await _userManager.FindByIdAsync(principal.Claims.FirstOrDefault(x => x.Type == "UserId")?.Value ?? "")
+                .ConfigureAwait(true);
+            if (user == null || user.RefreshToken != command.RefreshToken || user.RefreshTokenExpire <= DateTime.Now)
             {
-                throw new Exception($"{nameof(AuthenticationUser)} in {nameof(AuthController)}");
+                return BadRequest("Invalid client request");
             }
 
-            var claims = new List<Claim>
+            var newAccessToken = await _tokenService.GenerateJwtTokenAsync(user);
+            var newRefreshToken = _tokenService.GenerateRefreshToken();
+
+            user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpire = DateTime.Now.AddMinutes(Convert.ToDouble(_configuration["Jwt:Refresh_Expire"]));
+
+            await _userManager.UpdateAsync(user);
+
+            return Ok(new
             {
-                new(JwtRegisteredClaimNames.Sub, user.Email),
-                new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            };
-
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? string.Empty));
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-            var expires = DateTime.Now.AddDays(Convert.ToDouble(_configuration["Jwt:Expire"]));
-
-            var token = new JwtSecurityToken(
-                _configuration["Jwt:Issuer"],
-                _configuration["Jwt:Issuer"],
-                claims,
-                expires: expires,
-                signingCredentials: creds
-            );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+                AccessToken = newAccessToken,
+                RefreshToken = newRefreshToken
+            });
         }
-    }
 
-    public class RegisterModel
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-    }
+        public class RegisterCommand
+        {
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+            public string FirstName { get; set; }
+            public string LastName { get; set; }
+        }
 
-    public class LoginModel
-    {
-        public string Email { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
+        public class LoginCommand
+        {
+            public string Email { get; set; } = string.Empty;
+            public string Password { get; set; } = string.Empty;
+        }
+
+        public class RefresCommand
+        {
+            public string AccessToken { get; set; }
+            public string RefreshToken { get; set; }
+        }
     }
 }

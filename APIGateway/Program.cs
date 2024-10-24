@@ -1,4 +1,4 @@
-using Ocelot.DependencyInjection;
+using CommonService.Extentions;
 
 namespace APIGateway
 {
@@ -12,6 +12,7 @@ namespace APIGateway
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .AddRabbitMQConfiguration("gateway-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureAppConfiguration(config =>

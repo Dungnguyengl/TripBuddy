@@ -26,7 +26,6 @@ namespace APIGateway
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddControllers();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,7 +39,6 @@ namespace APIGateway
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

@@ -1,6 +1,9 @@
 ﻿using Authentication.Model;
+using Authentication.Services;
+using CommonService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 
 namespace Authentication
@@ -30,11 +33,15 @@ namespace Authentication
                 .AddDefaultTokenProviders();
 
             services.AddDiscoveryClient(Configuration);
+
+            services.AddHttpClient("APIGATEWAY")
+                .AddServiceDiscovery()
+                .AddTypedClient<IInternalService, InternalService>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
-
+            services.AddScoped<TokenService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
