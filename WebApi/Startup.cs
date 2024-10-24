@@ -1,7 +1,7 @@
 ﻿using CommonService.Services;
 using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
+using WebApi.Middlewares;
 
 namespace WebApi
 {
@@ -25,7 +25,7 @@ namespace WebApi
             services.AddControllers()
                 .AddNewtonsoftJson(cfg =>
                 {
-                    
+
                 });
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -44,7 +44,8 @@ namespace WebApi
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseAuthorization();
+            app.UseCustomAuthentication();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
