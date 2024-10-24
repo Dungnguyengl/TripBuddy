@@ -1,6 +1,5 @@
-using CommonService.Extentions;
 
-namespace APIGateway
+namespace ConfigurationService
 {
     public class Program
     {
@@ -12,15 +11,9 @@ namespace APIGateway
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("gateway-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.ConfigureAppConfiguration(config =>
-                    {
-                        config.AddJsonFile("ocelot.json");
-                    });
                     webBuilder.UseStartup<Startup>();
                 });
-
     }
 }

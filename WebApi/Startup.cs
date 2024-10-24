@@ -16,10 +16,7 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddServiceDiscovery(ops =>
-            {
-                ops.UseEureka();
-            });
+            services.AddDiscoveryClient(Configuration);
 
             services.AddHttpClient("APIGATEWAY")
                 .AddServiceDiscovery()

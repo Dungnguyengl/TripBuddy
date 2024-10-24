@@ -1,3 +1,5 @@
+using CommonService.Extentions;
+
 namespace TripperService
 {
     public class Program
@@ -10,6 +12,7 @@ namespace TripperService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .AddRabbitMQConfiguration("tripper-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

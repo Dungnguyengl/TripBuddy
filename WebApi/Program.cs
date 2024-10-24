@@ -1,3 +1,4 @@
+using CommonService.Extentions;
 
 namespace WebApi
 {
@@ -11,6 +12,7 @@ namespace WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .AddRabbitMQConfiguration("web-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

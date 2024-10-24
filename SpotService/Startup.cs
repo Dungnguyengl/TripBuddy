@@ -13,6 +13,7 @@ using System.Text;
 using System.Text.Json;
 using Steeltoe.Discovery.Client.SimpleClients;
 using SpotService.Controllers.Atraction;
+using System.Text.Json.Nodes;
 
 namespace SpotService
 {
@@ -41,11 +42,7 @@ namespace SpotService
                 ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
             });
 
-            //services.AddServiceDiscovery(ops =>
-            //{
-            //    var e = ops.Extensions;
-            //    ops.UseEureka();
-            //});
+            services.AddDiscoveryClient(Configuration);
 
             services.AddHttpClient("APIGATEWAY")
                 .AddServiceDiscovery()
@@ -61,39 +58,6 @@ namespace SpotService
             odataBuilder.EntitySet<AtractionDTO>("Atraction");
             return odataBuilder.GetEdmModel();
         }
-
-        public void ConfigFromExternal ()
-        {
-            var factory = new ConnectionFactory { HostName = "localhost", Port = 5672 };
-            using var connection = factory.CreateConnection();
-            using var channel = connection.CreateModel();
-
-            channel.QueueDeclare("eureka", true, false, false, null);
-            var consumer = new EventingBasicConsumer(channel);
-
-            consumer.Received += (model, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                var json = JsonSerializer.Deserialize<Dictionary<string, string>>(message);
-
-                var builder = new ConfigurationBuilder();
-                var configuation = builder.AddInMemoryCollection(json).Build();
-
-                //using var services = new ServiceProvider();
-                //services.AddServiceDiscovery(ops =>
-                //{
-                //    configuation.Bind(ops);
-                //    ops.UseEureka(cfg =>
-                //    {
-                        
-                //    });
-                //});
-
-
-            };
-            channel.BasicConsume("eureka", true, consumer);
-        } 
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
