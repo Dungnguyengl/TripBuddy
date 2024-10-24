@@ -7,8 +7,6 @@ EXPOSE 8081
 # Build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-# COPY ConfigurationService/ConfigurationService/ConfigurationService.csproj ./ConfigurationService/
-# COPY CommonService/CommonService.csproj ./CommonService/
 COPY ConfigurationService/ConfigurationService/ ./ConfigurationService/
 COPY CommonService/ ./CommonService/
 RUN dotnet remove ./ConfigurationService/ConfigurationService.csproj reference ../../CommonService/CommonService.csproj

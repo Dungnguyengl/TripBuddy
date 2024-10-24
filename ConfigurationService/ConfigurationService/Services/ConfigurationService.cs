@@ -61,8 +61,8 @@ namespace ConfigurationService.Services
                 .Where(key => !key.IsNullOrEmpty() && key != "global")
                 .Distinct();
 
-            using var connection = RetryExtentions.Retry(() => _factory.CreateConnection()) ?? throw new ArgumentNullException();
-            using var channel = connection.CreateModel();
+            using var connection = RetryExtentions.Retry(() => _factory.CreateConnection(), 10, 3000);
+            using var channel = RetryExtentions.Retry(() => connection.CreateModel());
 
             foreach (var section in sections)
             {

@@ -7,3 +7,6 @@ eureka:
     fetchRegistry: true
     server:
       enableSelfPreservation: false
+  instance:
+    evictionIntervalMs: 60000 # 1 minutes
+    leaseRenewalIntervalInSeconds: 30 # 30 seconds
