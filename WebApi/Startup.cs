@@ -1,26 +1,18 @@
 ﻿using CommonService.Services;
-using Steeltoe.Common.Http.Discovery;
 using Steeltoe.Discovery.Client;
 using WebApi.Middlewares;
 
 namespace WebApi
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public IConfiguration Configuration { get; }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration Configuration { get; } = configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDiscoveryClient(Configuration);
-
-            services.AddHttpClient("APIGATEWAY")
-                .AddServiceDiscovery()
-                .AddTypedClient<IInternalService, InternalService>();
+            services.AddHttpContextAccessor();
+            services.AddScoped<IInternalService, InternalService>();
 
             services.AddControllers()
                 .AddNewtonsoftJson(cfg =>
