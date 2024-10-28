@@ -2,6 +2,7 @@
 
 using CommonService.Constants;
 using CommonService.Extentions;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Steeltoe.Discovery;
 using System.Net.Http.Json;
@@ -9,7 +10,7 @@ using System.Text;
 
 namespace CommonService.Services
 {
-    public class InternalService(HttpClient client, IDiscoveryClient discovery) : ServiceBase(client, discovery), IInternalService
+    public class InternalService(IHttpClientFactory client, IDiscoveryClient discovery, IHttpContextAccessor context) : ServiceBase(client, discovery, context), IInternalService
     {
         public async Task<Response<TResult>> DeleteAsync<TResult>(ServiceType type, object? param, string path = "") where TResult : class
         {

@@ -3,13 +3,15 @@ using System.Net;
 
 namespace WebApi.Middlewares
 {
-    public class CustomAuthenticationMiddleware(RequestDelegate next, IInternalService internalService)
+    public class CustomAuthenticationMiddleware(RequestDelegate next, IServiceScopeFactory scopeFactory)
     {
         private readonly RequestDelegate _next = next;
-        private readonly IInternalService _intenalService = internalService;
+        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
 
         public async Task Invoke(HttpContext context)
         {
+            using var scope = _scopeFactory.CreateScope();
+            var internalService = scope.ServiceProvider.GetService<IInternalService>();
             var route = context.Request.Path;
 
             if (route.HasValue && route.Value.StartsWith("/api/Authen"))
@@ -22,7 +24,7 @@ namespace WebApi.Middlewares
             {
                 var param = new { AccessToken = token.Replace("Bearer ", "") };
 
-                return _intenalService.PostAsync<RequestData>(CommonService.Constants.ServiceType.Authentication, param, "token/isValid");
+                return internalService.PostAsync<RequestData>(CommonService.Constants.ServiceType.Authentication, param, "token/isValid");
             });
 
             var results = await Task.WhenAll(tasks);
