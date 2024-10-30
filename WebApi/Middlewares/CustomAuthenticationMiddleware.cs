@@ -3,16 +3,18 @@ using System.Net;
 
 namespace WebApi.Middlewares
 {
-    public class CustomAuthenticationMiddleware(RequestDelegate next, IServiceScopeFactory scopeFactory)
+    public class CustomAuthenticationMiddleware(RequestDelegate next, IServiceProvider service)
     {
         private readonly RequestDelegate _next = next;
-        private readonly IServiceScopeFactory _scopeFactory = scopeFactory;
+        private readonly IServiceProvider _service = service;
 
         public async Task Invoke(HttpContext context)
         {
-            using var scope = _scopeFactory.CreateScope();
+            using var scope = _service.CreateScope();
             var internalService = scope.ServiceProvider.GetService<IInternalService>();
             var route = context.Request.Path;
+
+            ArgumentNullException.ThrowIfNull(internalService, nameof(internalService));
 
             if (route.HasValue && route.Value.StartsWith("/api/Authen"))
             {

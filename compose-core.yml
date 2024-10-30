@@ -1,0 +1,18 @@
+services:
+  api-gateway:
+    build:
+      context: .
+      dockerfile: APIGateway/Dockerfile
+    container_name: APIGateway
+    environment:
+    - RABBITMQ_HOST=RABBITMQ_HOST
+    - RABBITMQ_PORT=RABBITMQ_PORT
+
+  web-api:
+    build:
+      context: .
+      dockerfile: WebApi/Dockerfile
+    container_name: WebApi
+    environment:
+    - RABBITMQ_HOST=RABBITMQ_HOST
+    - RABBITMQ_PORT=RABBITMQ_PORT

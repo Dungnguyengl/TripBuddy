@@ -2,8 +2,6 @@ services:
   rabbit:
     image: rabbitmq:3-management
     container_name: rabbit
-    networks:
-      - tripbuddy-network
     ports:
       - 15672:15672
       - 5672:5672
@@ -13,13 +11,9 @@ services:
       context: .
       dockerfile: ConfigurationService/ConfigurationService/Dockerfile
     container_name: 'configuration'
-    depends_on:
-      - rabbit
-    networks:
-      - tripbuddy-network
     environment:
-      - RABBITMQ_HOST=rabbit
-      - RABBITMQ_PORT=5672
+      - RABBITMQ_HOST=RABBITMQ_HOST
+      - RABBITMQ_PORT=RABBITMQ_PORT
     ports:
       - 8081:8081
       - 8080:8080
@@ -29,7 +23,3 @@ services:
     container_name: eureka-server
     ports:
       - 8761:8761
-
-networks:
-  tripbuddy-network:
-    driver: bridge

@@ -12,7 +12,7 @@ namespace APIGateway
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("gateway-config-queue")
+                .AddTripbuddyConfiguration("gateway-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureAppConfiguration(config =>
