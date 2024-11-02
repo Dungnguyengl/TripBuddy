@@ -1,13 +1,16 @@
 ﻿using CommonService.Constants;
+using CommonService.Extentions;
+using Microsoft.AspNetCore.Http;
 using Steeltoe.Discovery;
 
 namespace CommonService.Services
 {
-    public abstract class ServiceBase(HttpClient client, IDiscoveryClient discovery)
+    public abstract class ServiceBase(IHttpClientFactory clientFactory, IDiscoveryClient discovery, IHttpContextAccessor context)
     {
-        private readonly HttpClient _client = client;
+        private readonly IHttpClientFactory _clientFactory = clientFactory;
         private readonly IDiscoveryClient _discovery = discovery;
-        private const string GATEWAYID = "APIGATEWAY";
+        private readonly HttpContext? _context = context.HttpContext;
+        private const string GATEWAYID = "APIGateway";
 
         protected HttpClient Client
         {
@@ -15,8 +18,15 @@ namespace CommonService.Services
             {
                 var gateway = _discovery.GetInstances(GATEWAYID).FirstOrDefault()
                     ?? throw new ArgumentNullException($"{nameof(ServiceBase)} - {GATEWAYID}");
-                _client.BaseAddress ??= gateway.Uri;
-                return _client;
+                var client = _clientFactory.CreateClient();
+                var token = _context?.Request.Headers.Authorization.FirstOrDefault(x => !x.IsNullOrEmpty() && x.StartsWith("Bearer"))
+                    ?.Replace("Bearer ", "") ?? string.Empty;
+                client.BaseAddress ??= gateway.Uri;
+                if (!token.IsNullOrEmpty())
+                {
+                    client.DefaultRequestHeaders.Authorization = new("Bearer", token);
+                }
+                return client;
             }
         }
 

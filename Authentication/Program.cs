@@ -12,7 +12,7 @@ namespace Authentication
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("auth-config-queue")
+                .AddTripbuddyConfiguration("auth-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

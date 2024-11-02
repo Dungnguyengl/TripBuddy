@@ -25,8 +25,8 @@ namespace ConfigurationService.Services
             }
 
             var json = File.ReadAllText(_filePath);
-            var jsonNode = JsonNode.Parse(json).AsObject();
-            return jsonNode.FlattenJson();
+            var jsonNode = JsonNode.Parse(json)?.AsObject();
+            return jsonNode?.FlattenJson() ?? [];
         }
 
         public void SaveConfigurations(Dictionary<string, string> config)
@@ -36,10 +36,14 @@ namespace ConfigurationService.Services
             File.WriteAllText(_filePath, json);
         }
 
-        public void PushConfigurationToRabbitMQ(string section, Dictionary<string, string> config)
+        public void PushConfigurationToRabbitMQ(string section)
         {
             using var connection = _factory.CreateConnection();
             using var channel = connection.CreateModel();
+
+            var config = LoadConfigurations()
+                    .Where(kvp => kvp.Key.StartsWith(section) || kvp.Key.StartsWith("global"))
+                    .ToDictionary();
 
             var queueName = $"{section}-config-queue";
             channel.QueueDeclare(queue: queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
@@ -72,13 +76,15 @@ namespace ConfigurationService.Services
                 // Purge previous messages
                 channel.QueuePurge(queueName);
 
-                var raw = config.Where(kvp => kvp.Key.StartsWith(section) || kvp.Key.StartsWith("global"))
+                var raw = config
+                    .Where(kvp => kvp.Key.StartsWith(section) || kvp.Key.StartsWith("global"))
                     .ToDictionary()
                     .ReduceLevels()
                     .RevertToNestedJson()
                     .ToString();
                 var body = raw.ConvertStringToByteArray();
                 channel.BasicPublish(exchange: "", routingKey: queueName, basicProperties: null, body: body);
+                Console.WriteLine($"[PUBLISHED]: {queueName}");
             }
         }
     }

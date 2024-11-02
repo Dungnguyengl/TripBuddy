@@ -3,27 +3,54 @@
         "eureka": {
             "client": {
                 "serviceUrl": "http://localhost:8761/eureka/",
-                "shouldFetchRegistry": "true",
-                "shouldRegisterWithEureka": "true",
-                "validateCertificates": "false",
+                "shouldFetchRegistry": true,
+                "shouldRegisterWithEureka": true,
+                "validateCertificates": false,
                 "shouldUnregisterOnShutdown": true
             }
         },
         "ConnectionStrings": {
-            "mssql": "Server=localhost,32768;Database=TRIP_BUDDY;User Id=sa;Password=admin@123;TrustServerCertificate=True;"
+            "mssql": "Data Source=localhost;Initial Catalog=Tripbuddy;User Id=admin;Password=admin;TrustServerCertificate=True;"
         }
     },
-    "gateway": {},
+    "gateway": {
+        "eureka": {
+            "instance": {
+                "hostname": "localhost",
+                "preferIpAddress": false
+            }
+        }
+    },
     "auth": {
         "Jwt": {
-            "Key": "Tripbuddy_jwt_key_0HN7A2PJBRQA00HN7A2R760TU9",
-            "Issuer": "Tripbuddy",
+            "Key": "KEY_HERE",
+            "Issuer": "ISSUER_HERE",
             "Expire": 60,
             "Refresh_Expire": 21600
+        },
+        "eureka": {
+            "instance": {
+                "hostname": "localhost",
+                "preferIpAddress": false
+            }
         }
     },
     "mobile": {},
-    "spot": {},
+    "spot": {
+        "eureka": {
+            "instance": {
+                "hostname": "localhost",
+                "preferIpAddress": false
+            }
+        }
+    },
     "tripper": {},
-    "web": {}
+    "web": {
+        "eureka": {
+            "instance": {
+                "hostname": "localhost",
+                "preferIpAddress": false
+            }
+        }
+    }
 }

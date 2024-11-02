@@ -1,15 +1,17 @@
-﻿namespace AspireService.Resources
+﻿using System.Xml.Serialization;
+
+namespace AspireService.Resources
 {
-    public sealed class EurekaResource(string name) : ContainerResource(name), IResourceWithConnectionString
+    [XmlRoot("application")]
+    public class EurekaNode
     {
-        private EndpointReference? _containerEndpoinReference;
+        [XmlElement("instance")]
+        public List<EurekaInstance> EurekaInstances {get; set; }
+    }
 
-        internal const string HttpEndpointName = "container";
-
-        public EndpointReference ContainerEndpointReference => _containerEndpoinReference ??= new(this, HttpEndpointName);
-
-        public ReferenceExpression ConnectionStringExpression => ReferenceExpression.Create($"http://{ContainerEndpointReference.Host}:{ContainerEndpointReference.Property(EndpointProperty.Port)}");
-
-        IEnumerable<object> IValueWithReferences.References => [ConnectionStringExpression];
+    public class EurekaInstance
+    {
+        [XmlElement("instanceId")]
+        public string InstanceId {get; set; }
     }
 }

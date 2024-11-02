@@ -1,26 +1,21 @@
 ﻿using CommonService.Services;
-using Steeltoe.Common.Http.Discovery;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Discovery.Client;
 using WebApi.Middlewares;
 
 namespace WebApi
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public IConfiguration Configuration { get; }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration Configuration { get; } = configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDiscoveryClient(Configuration);
+            services.AddHttpClient();
+            services.AddHttpContextAccessor();
 
-            services.AddHttpClient("APIGATEWAY")
-                .AddServiceDiscovery()
-                .AddTypedClient<IInternalService, InternalService>();
+            services.AddDiscoveryClient(Configuration);
+            services.AddScoped<IInternalService, InternalService>();
 
             services.AddControllers()
                 .AddNewtonsoftJson(cfg =>
@@ -49,6 +44,18 @@ namespace WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            HandleChangeConfigurationRuntime(app);
+        }
+
+        private void HandleChangeConfigurationRuntime(IApplicationBuilder app)
+        {
+            ChangeToken.OnChange(Configuration.GetReloadToken, () =>
+            {
+                var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+                Console.WriteLine("++++++++++StopByChangeConfiguration++++++++++");
+                lifetime.StopApplication();
             });
         }
     }
