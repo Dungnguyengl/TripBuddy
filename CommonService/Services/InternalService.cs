@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using Steeltoe.Discovery;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace CommonService.Services
 {
@@ -54,6 +55,18 @@ namespace CommonService.Services
                 Content = content,
                 Code = result.StatusCode
             };
+        }
+
+        public async Task<ODataRespose<TResult>> GetByODataAsync<TResult>(ServiceType type, ODataParam? param = null, string path = "") where TResult : class
+        {
+            param ??= new();
+            var result = await Client.GetAsync(GetEndPoint(type, path + param.ToString()));
+            var resContentRaw = await result.Content.ReadAsStringAsync();
+            var test = JsonNode.Parse(resContentRaw).AsObject();
+            var content = JsonConvert.DeserializeObject<ODataRespose<TResult>>(resContentRaw);
+            content.Code = result.StatusCode;
+            content.Count = test.FirstOrDefault(x => x.Key == "@odata.count").Value?.GetValue<int>() ?? 0;
+            return content;
         }
 
         public async Task<Response<TResult>> PostAsync<TResult>(ServiceType type, object? param, string path = "") where TResult : class

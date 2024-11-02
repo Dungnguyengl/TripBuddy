@@ -10,7 +10,7 @@ namespace CommonService.Services
         private readonly IHttpClientFactory _clientFactory = clientFactory;
         private readonly IDiscoveryClient _discovery = discovery;
         private readonly HttpContext? _context = context.HttpContext;
-        private const string GATEWAYID = "APIGATEWAY";
+        private const string GATEWAYID = "APIGateway";
 
         protected HttpClient Client
         {

@@ -45,7 +45,14 @@ namespace ConfigurationService.Controllers
             configs.AddRange([.. newSetting]);
 
             _configService.SaveConfigurations(configs.ToDictionary());
-            _configService.PushConfigurationToRabbitMQ(section, global.ToDictionary());
+            if (section == "global")
+            {
+                _configService.PushAllSectionToRabbitMQ();
+            }
+            else
+            {
+                _configService.PushConfigurationToRabbitMQ(section);
+            }
 
             return Ok();
         }

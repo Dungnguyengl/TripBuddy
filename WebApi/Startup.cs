@@ -1,4 +1,5 @@
 ﻿using CommonService.Services;
+using Microsoft.Extensions.Primitives;
 using Steeltoe.Discovery.Client;
 using WebApi.Middlewares;
 
@@ -10,8 +11,10 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDiscoveryClient(Configuration);
+            services.AddHttpClient();
             services.AddHttpContextAccessor();
+
+            services.AddDiscoveryClient(Configuration);
             services.AddScoped<IInternalService, InternalService>();
 
             services.AddControllers()
@@ -41,6 +44,18 @@ namespace WebApi
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            HandleChangeConfigurationRuntime(app);
+        }
+
+        private void HandleChangeConfigurationRuntime(IApplicationBuilder app)
+        {
+            ChangeToken.OnChange(Configuration.GetReloadToken, () =>
+            {
+                var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+                Console.WriteLine("++++++++++StopByChangeConfiguration++++++++++");
+                lifetime.StopApplication();
             });
         }
     }
