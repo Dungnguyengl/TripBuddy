@@ -1,32 +1,25 @@
-﻿using Ocelot.DependencyInjection;
+﻿using CommonService.Services;
+using Microsoft.Extensions.Primitives;
+using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Eureka;
-using Steeltoe.Discovery.Client;
-using Steeltoe.Discovery.Eureka;
+using Steeltoe.Discovery;
 
 namespace APIGateway
 {
-    public class Startup
+    public class Startup(IConfiguration configuration)
     {
-        public IConfiguration Configuration { get; }
-
-        public Startup(IConfiguration configuration)
-        {
-            Configuration = configuration;
-        }
+        public IConfiguration Configuration { get; } = configuration;
 
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddOcelot(Configuration).AddEureka();
-            services.AddServiceDiscovery(o =>
-            {
-                o.UseEureka();
-            });
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-            services.AddControllers();
+            services.AddOcelot(Configuration)
+                .AddEureka();
+            services.AddScoped<IInternalService, InternalService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,12 +33,22 @@ namespace APIGateway
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
             app.UseOcelot().Wait();
+            HandleChangeConfigurationRuntime(app);
+        }
+
+        private void HandleChangeConfigurationRuntime(IApplicationBuilder app)
+        {
+            ChangeToken.OnChange(Configuration.GetReloadToken, async () =>
+            {
+                var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+                Console.WriteLine("++++++++++StopByChangeConfiguration++++++++++");
+                lifetime.StopApplication();
+            });
         }
     }
 }

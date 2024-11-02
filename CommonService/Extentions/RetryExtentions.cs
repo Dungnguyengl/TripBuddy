@@ -25,7 +25,7 @@
             }
         }
 
-        public static TResult? Retry<TResult>(Func<TResult> func, int times = 3, int wating = 2000)
+        public static TResult Retry<TResult>(Func<TResult> func, int times = 3, int wating = 2000)
         {
             ArgumentNullException.ThrowIfNull(func, $"{nameof(RetryExtentions)}:{nameof(Retry)}");
 
@@ -39,14 +39,14 @@
                 catch
                 (Exception e)
                 {
-                    if (++runningTime == times)
+                    if (++runningTime < times)
                     {
-                        throw;
+                        Task.Delay(wating).Wait();
+                        continue;
                     }
-                    Task.Delay(runningTime).Wait();
                 }
             }
-            return default;
+            return func.Invoke();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace TripperService
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("tripper-config-queue")
+                .AddTripbuddyConfiguration("tripper-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

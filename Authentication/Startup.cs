@@ -1,8 +1,10 @@
 ﻿using Authentication.Model;
+using Authentication.Services;
 using CommonService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Steeltoe.Common.Http.Discovery;
+using Microsoft.Extensions.Primitives;
+using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 
 namespace Authentication
@@ -24,7 +26,7 @@ namespace Authentication
             {
                 ops.UseSqlServer(Configuration.GetConnectionString("mssql"), cfg =>
                 {
-                    cfg.EnableRetryOnFailure(5);
+                    cfg.EnableRetryOnFailure(10, TimeSpan.FromSeconds(5), null);
                 });
             });
             services.AddIdentity<AuthenticationUser, AuthenticationRole>()
@@ -32,13 +34,13 @@ namespace Authentication
                 .AddDefaultTokenProviders();
 
             services.AddDiscoveryClient(Configuration);
+            services.AddScoped<IInternalService, InternalService>();
 
-            services.AddHttpClient("APIGATEWAY")
-                .AddServiceDiscovery()
-                .AddTypedClient<IInternalService, InternalService>();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddScoped<TokenService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -61,6 +63,18 @@ namespace Authentication
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+            });
+
+            HandleChangeConfigurationRuntime(app);
+        }
+
+        private void HandleChangeConfigurationRuntime(IApplicationBuilder app)
+        {
+            ChangeToken.OnChange(Configuration.GetReloadToken, () =>
+            {
+                var lifetime = app.ApplicationServices.GetRequiredService<IHostApplicationLifetime>();
+                Console.WriteLine("++++++++++StopByChangeConfiguration++++++++++");
+                lifetime.StopApplication();
             });
         }
     }

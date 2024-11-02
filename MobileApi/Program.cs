@@ -12,7 +12,7 @@ namespace MobileApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("mobile-config-queue")
+                .AddTripbuddyConfiguration("mobile-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

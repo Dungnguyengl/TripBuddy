@@ -12,7 +12,7 @@ namespace WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("web-config-queue")
+                .AddTripbuddyConfiguration("web-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();

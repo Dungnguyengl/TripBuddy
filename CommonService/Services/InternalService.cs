@@ -2,14 +2,16 @@
 
 using CommonService.Constants;
 using CommonService.Extentions;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Steeltoe.Discovery;
 using System.Net.Http.Json;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace CommonService.Services
 {
-    public class InternalService(HttpClient client, IDiscoveryClient discovery) : ServiceBase(client, discovery), IInternalService
+    public class InternalService(IHttpClientFactory client, IDiscoveryClient discovery, IHttpContextAccessor context) : ServiceBase(client, discovery, context), IInternalService
     {
         public async Task<Response<TResult>> DeleteAsync<TResult>(ServiceType type, object? param, string path = "") where TResult : class
         {
@@ -55,6 +57,18 @@ namespace CommonService.Services
             };
         }
 
+        public async Task<ODataRespose<TResult>> GetByODataAsync<TResult>(ServiceType type, ODataParam? param = null, string path = "") where TResult : class
+        {
+            param ??= new();
+            var result = await Client.GetAsync(GetEndPoint(type, path + param.ToString()));
+            var resContentRaw = await result.Content.ReadAsStringAsync();
+            var test = JsonNode.Parse(resContentRaw).AsObject();
+            var content = JsonConvert.DeserializeObject<ODataRespose<TResult>>(resContentRaw);
+            content.Code = result.StatusCode;
+            content.Count = test.FirstOrDefault(x => x.Key == "@odata.count").Value?.GetValue<int>() ?? 0;
+            return content;
+        }
+
         public async Task<Response<TResult>> PostAsync<TResult>(ServiceType type, object? param, string path = "") where TResult : class
         {
             var jsonString = JsonConvert.SerializeObject(param);
@@ -62,11 +76,13 @@ namespace CommonService.Services
             {
                 Content = JsonContent.Create(param),
             };
-            var result = await Client.SendAsync(req);
+            var result = await RetryExtentions.Retry(async () => await Client.SendAsync(req));
+            var resContentRaw = await result.Content.ReadAsStringAsync();
+            var content = JsonConvert.DeserializeObject<TResult>(resContentRaw);
 
             return new Response<TResult>
             {
-                Content = await result.Content.ReadFromJsonAsync<TResult>(),
+                Content = content,
                 Code = result.StatusCode
             };
         }

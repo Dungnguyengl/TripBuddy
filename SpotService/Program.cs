@@ -13,7 +13,7 @@ namespace SpotService
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
-                .AddRabbitMQConfiguration("spot-config-queue")
+                .AddTripbuddyConfiguration("spot-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                    {
                        webBuilder.UseStartup<Startup>();
