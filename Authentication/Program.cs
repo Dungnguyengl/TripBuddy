@@ -12,6 +12,12 @@ namespace Authentication
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(cfg =>
+                {
+                    cfg.ClearProviders();
+                    cfg.AddDebug();
+                    cfg.AddConsole();
+                })
                 .AddTripbuddyConfiguration("auth-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

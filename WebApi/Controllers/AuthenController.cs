@@ -5,25 +5,21 @@ using WebApi.Dtos;
 namespace WebApi.Controllers
 {
     [ApiController]
-    [Route("api/[Controller]")]
+    [Route("api/[controller]")]
     public class AuthenController(IInternalService internalService) : ControllerBase
     {
         [HttpPost("login")]
-        public async Task<LoginDto> Login([FromBody] LoginCommand command)
+        public async Task<Response<LoginDto>> Login([FromBody] LoginCommand command)
         {
             var res = await internalService.PostAsync<LoginDto>(CommonService.Constants.ServiceType.Authentication, command, "login");
-            if (res.Code != System.Net.HttpStatusCode.OK)
-                throw new Exception();
-            return res.Content;
+            return res;
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] RegisterCommand command)
+        public async Task<Response<RegisterDto>> Register([FromBody] RegisterCommand command)
         {
-            var res = await internalService.PostAsync<LoginDto>(CommonService.Constants.ServiceType.Authentication, command, "register");
-            if (res.Code != System.Net.HttpStatusCode.OK)
-                throw new (res.Code.ToString());
-            return Ok();
+            var res = await internalService.PostAsync<RegisterDto>(CommonService.Constants.ServiceType.Authentication, command, "register");
+            return res;
         }
 
         [HttpPost("refresh")]

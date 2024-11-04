@@ -10,6 +10,7 @@
     {
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }
+        public string Message { get; set; }
     }
 
     public class RegisterCommand
@@ -18,6 +19,11 @@
         public string Password { get; set; } = string.Empty;
         public string FirstName { get; set; }
         public string LastName { get; set; }
+    }
+
+    public class RegisterDto
+    {
+        public string Message { get; set; }
     }
 
     public class RefreshTokenCommand
