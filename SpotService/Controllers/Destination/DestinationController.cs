@@ -9,21 +9,21 @@ namespace SpotService.Controllers.Destination
     {
         private readonly SpotDbContext _context = context;
 
-        [HttpGet]
-        public Task<List<DestinationDTO>> Get()
-        {
-            var query = from head in _context.DesHeads.AsNoTracking()
-                        select new DestinationDTO
-                        {
-                            DesKey = head.DesKey,
-                            DesDescription = head.Description ?? string.Empty,
-                            DesName = head.DesName ?? string.Empty,
-                            DesPic = head.PicKey,
-                            AtrKey = head.AtrKey,
-                        };
+        //[HttpGet]
+        //public Task<List<DestinationDTO>> Get()
+        //{
+        //    var query = from head in _context.DesHeads.AsNoTracking()
+        //                select new DestinationDTO
+        //                {
+        //                    DesKey = head.DesKey,
+        //                    DesDescription = head.Description ?? string.Empty,
+        //                    DesName = head.DesName ?? string.Empty,
+        //                    DesPic = head.PicKey,
+        //                    AtrKey = head.AtrKey,
+        //                };
 
-            return Task.FromResult(query.ToList());
-        }
+        //    return Task.FromResult(query.ToList());
+        //}
 
         [HttpGet("Details")]
         public ActionResult<DestinationDTO> Details([FromQuery]Guid key)

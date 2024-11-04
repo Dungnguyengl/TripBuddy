@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CommonService.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpotService.Model;
 
@@ -8,25 +9,6 @@ namespace SpotService.Controllers.Place
     public class PlaceController(SpotDbContext context) : ControllerBase
     {
         private readonly SpotDbContext _context = context;
-
-        [HttpGet]
-        public Task<List<PlaceDTO>> Get()
-        {
-            var query = from head in _context.PlcHeads.AsNoTracking()
-                        select new PlaceDTO
-                        {
-                            PlaceKey = head.PlcKey,
-                            AtrKey = head.AtrKey,
-                            Description = head.Description,
-                            DesKey = head.DesKey,
-                            Latitude = head.Latitude,
-                            Longitude = head.Longitude,
-                            PicKey = head.PicKey,
-                            PlaceName = head.PlcName,
-                        };
-
-            return Task.FromResult(query.ToList());
-        }
 
         [HttpGet("Details")]
         public ActionResult<PlaceDTO> Details([FromQuery]Guid key)
@@ -47,9 +29,9 @@ namespace SpotService.Controllers.Place
 
             if (query.Any())
             {
-                return Ok(query);
+                return Ok(query.FirstOrDefault());
             }
-            else return NotFound();
+            else throw new NotFoundException($"Place: {key}");
         }
 
         [HttpGet("Search")]

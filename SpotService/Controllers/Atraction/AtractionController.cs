@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CommonService.Exceptions;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
@@ -6,30 +7,11 @@ using SpotService.Model;
 
 namespace SpotService.Controllers.Atraction
 {
-    public class AtractionController(SpotDbContext context) : ODataController
+    [ApiController]
+    [Route("api/[controller]")]
+    public class AtractionController(SpotDbContext context) : ControllerBase
     {
         private readonly SpotDbContext _context = context;
-
-        [EnableQuery]
-        public IActionResult Get()
-        {
-            var atrHeads = _context.AtrHeads.AsNoTracking();
-            var constants = _context.Constants.AsNoTracking();
-
-            var query = from head in atrHeads
-                        join continent in constants on head.Contitnent equals continent.ConstantCode
-                        join sub in constants on head.SubContitnent equals sub.ConstantCode
-                        select new AtractionDTO
-                        {
-                            Id = head.AtrKey,
-                            Continent = continent.ConstantName,
-                            SubContinent = sub.ConstantName,
-                            Country = head.Country,
-                            PicLink = ""
-                        };
-
-            return Ok(query);
-        }
 
         [HttpGet("Keys")]
         public ActionResult<AttractionKeyValueDTO> GetAttractionKeyValue()
@@ -63,42 +45,36 @@ namespace SpotService.Controllers.Atraction
                                   Contitnent = continent.ConstantName,
                                   SubContitnent = sub.ConstantName,
                                   Description = head.Description,
-                                  Country = head.Country,
-                                  PicKey = head.PicKey
-                              }).FirstOrDefault();
+                                  Country = head.Country
+                              }).FirstOrDefault() ?? throw new NotFoundException($"Atraction - {atrId}");
 
-            if (attraction == null)
-            {
-                return NotFound();
-            }
+            //attraction.AtrContents = _context.AtrContents.AsNoTracking()
+            //    .Where(content => content.AtrKey == atrId)
+            //    .Select(content => new AtrContent
+            //    {
+            //        ContentKey = content.ContentKey,
+            //        Content = content.Content,
+            //        Title = content.Title,
+            //        ContentType = content.ContentType
+            //    }).ToList();
 
-            attraction.AtrContents = _context.AtrContents.AsNoTracking()
-                .Where(content => content.AtrKey == atrId)
-                .Select(content => new AtrContent
-                {
-                    ContentKey = content.ContentKey,
-                    Content = content.Content,
-                    Title = content.Title,
-                    ContentType = content.ContentType
-                }).ToList();
+            //attraction.DesHeads = _context.DesHeads.AsNoTracking()
+            //    .Where(des => des.AtrKey == atrId)
+            //    .Select(des => new DesHead
+            //    {
+            //        DesKey = des.DesKey,
+            //        Description = des.Description,
+            //        DesName = des.DesName
+            //    }).Take(6).ToList();
 
-            attraction.DesHeads = _context.DesHeads.AsNoTracking()
-                .Where(des => des.AtrKey == atrId)
-                .Select(des => new DesHead
-                {
-                    DesKey = des.DesKey,
-                    Description = des.Description,
-                    DesName = des.DesName
-                }).Take(6).ToList();
-
-            attraction.PlcHeads = _context.PlcHeads.AsNoTracking()
-                .Where(plc => plc.AtrKey == atrId)
-                .Select(plc => new PlcHead
-                {
-                    PlcKey = plc.PlcKey,
-                    Description = plc.Description,
-                    PlcName = plc.PlcName
-                }).Take(6).ToList();
+            //attraction.PlcHeads = _context.PlcHeads.AsNoTracking()
+            //    .Where(plc => plc.AtrKey == atrId)
+            //    .Select(plc => new PlcHead
+            //    {
+            //        PlcKey = plc.PlcKey,
+            //        Description = plc.Description,
+            //        PlcName = plc.PlcName
+            //    }).Take(6).ToList();
 
             return attraction;
         }

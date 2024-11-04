@@ -6,5 +6,10 @@
         {
             return builder.UseMiddleware<CustomAuthenticationMiddleware>();
         }
+
+        public static IApplicationBuilder UseCustomeRequest(this IApplicationBuilder builder) 
+        {
+            return builder.UseMiddleware<CustomRequestMiddleware>();
+        }
     }
 }
