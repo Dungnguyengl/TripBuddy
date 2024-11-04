@@ -1,20 +1,23 @@
-﻿namespace SpotService.Controllers.Destination
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SpotService.Controllers.Destination
 {
     public class DestinationDTO
     {
+        [Key]
         public Guid DesKey { get; set; }
-        public string DesName { get; set; }
+        public string? DesName { get; set; }
         public Guid? DesPic { get; set; }
-        public string DesDescription { get; set; }
+        public string? DesDescription { get; set; }
         public Guid AtrKey { get; set; }
-        
+        public string? PicLink { get; set; }
     }
 
     public class CDestinationDTO
     {
-        public string DesName { get; set; }
-        public string DesPic { get; set; }
-        public string DesDescription { get; set; }
+        public string? DesName { get; set; }
+        public string? DesPic { get; set; }
+        public string? DesDescription { get; set; }
         public Guid AtrKey { get; set; }
     }
     public class UDestinationDto : CDestinationDTO

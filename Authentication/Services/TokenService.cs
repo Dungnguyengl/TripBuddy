@@ -17,14 +17,12 @@ namespace Authentication.Services
 
         public async Task<string> GenerateJwtTokenAsync(AuthenticationUser user)
         {
-            if (user is null)
-            {
-                throw new Exception($"{nameof(AuthenticationUser)} in {nameof(AuthController)}");
-            }
+            ArgumentNullException.ThrowIfNull(user);
 
             var claims = await _userManager.GetClaimsAsync(user);
             claims.Add(new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()));
             claims.Add(new ("UserId", user.Id.ToString()));
+            claims.Add(new("UserEmail", user.Email ?? string.Empty));
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? string.Empty));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

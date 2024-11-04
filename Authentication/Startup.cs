@@ -1,5 +1,6 @@
 ﻿using Authentication.Model;
 using Authentication.Services;
+using CommonService.Exceptions;
 using CommonService.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,7 +51,7 @@ namespace Authentication
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-
+            app.UseCustomeHandleException();
             app.UseHttpsRedirection();
 
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())

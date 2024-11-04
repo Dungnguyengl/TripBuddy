@@ -13,6 +13,12 @@ namespace SpotService
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
             return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(cfg =>
+                {
+                    cfg.ClearProviders();
+                    cfg.AddDebug();
+                    cfg.AddConsole();
+                })
                 .AddTripbuddyConfiguration("spot-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                    {

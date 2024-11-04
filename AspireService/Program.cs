@@ -1,3 +1,4 @@
+using Aspire.Hosting;
 using AspireService.Resources;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -21,7 +22,10 @@ List<IResourceBuilder<ProjectResource>> resourceBuilders =
         builder.AddProject<SpotService>("SPOTSERVICE")
     ];
 
-resourceBuilders.ForEach(x => x.WithReplicas(10));
+resourceBuilders.ForEach(x => {
+    x.WithEnvironment("RABBITMQ_HOST", "localhost")
+    .WithEnvironment("RABBITMQ_PORT", "5672");
+});
 
 var app = builder.Build();
 
