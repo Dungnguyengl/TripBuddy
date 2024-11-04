@@ -1,4 +1,5 @@
-﻿using CommonService.Services;
+﻿using CommonService.Exceptions;
+using CommonService.Services;
 using Microsoft.Extensions.Primitives;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
@@ -30,6 +31,7 @@ namespace APIGateway
                 app.UseSwaggerUI();
             }
 
+            app.UseCustomeHandleException();
             app.UseHttpsRedirection();
 
             app.UseRouting();

@@ -12,6 +12,12 @@ namespace WebApi
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(cfg =>
+                {
+                    cfg.ClearProviders();
+                    cfg.AddDebug();
+                    cfg.AddConsole();
+                })
                 .AddTripbuddyConfiguration("web-config-queue")
                 .ConfigureWebHostDefaults(webBuilder =>
                 {

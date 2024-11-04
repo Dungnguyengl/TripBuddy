@@ -16,7 +16,7 @@ namespace WebApi.Middlewares
 
             ArgumentNullException.ThrowIfNull(internalService, nameof(internalService));
 
-            if (route.HasValue && route.Value.StartsWith("/api/Authen"))
+            if (route.HasValue && (route.Value.StartsWith("/api/Authen") || route.Value.StartsWith("/api/authen")))
             {
                 await _next(context);
                 return;

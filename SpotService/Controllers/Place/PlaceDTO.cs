@@ -1,7 +1,10 @@
-﻿namespace SpotService.Controllers.Place
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace SpotService.Controllers.Place
 {
     public class PlaceDTO : CPlaceDTO
     {
+        [Key]
         public Guid PlaceKey { get; set; }
     }
 
