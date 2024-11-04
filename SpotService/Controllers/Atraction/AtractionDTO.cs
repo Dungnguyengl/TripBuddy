@@ -20,7 +20,7 @@ namespace SpotService.Controllers.Atraction
         public string? Contitnent { get; set; }
         public string? SubContitnent { get; set; }
         public string? Country { get; set; }
-        public Guid? PicKey { get; set; }
+        public string? PicLink { get; set; }
         public IEnumerable<AtrContent> AtrContents { get; set; } = new List<AtrContent>();
         public IEnumerable<DesHead> DesHeads { get; set; } = new List<DesHead>();
         public IEnumerable<PlcHead> PlcHeads { get; set; } = new List<PlcHead>();

@@ -25,7 +25,9 @@ namespace Authentication.Controllers
                 return Ok(new { Message = "User registered successfully" });
             }
 
-            return BadRequest(result.Errors);
+            var errors = result.Errors.Select(x => x.Description);
+
+            return BadRequest(new { Message = string.Join(", ", errors) });
         }
 
         [HttpPost("login")]
@@ -50,7 +52,7 @@ namespace Authentication.Controllers
                 });
             }
 
-            return Unauthorized();
+            return Unauthorized(new { Message = "Invalid email or password" });
         }
 
         [HttpPost("refresh")]

@@ -1,4 +1,5 @@
-﻿using CommonService.Services;
+﻿using CommonService.Exceptions;
+using CommonService.Services;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Discovery.Client;
 using WebApi.Middlewares;
@@ -11,7 +12,6 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpClient();
             services.AddHttpContextAccessor();
 
             services.AddDiscoveryClient(Configuration);
@@ -36,10 +36,12 @@ namespace WebApi
                 app.UseSwaggerUI();
             }
 
+            app.UseCustomeHandleException();
             app.UseHttpsRedirection();
 
             app.UseRouting();
             app.UseCustomAuthentication();
+            app.UseCustomeRequest();
 
             app.UseEndpoints(endpoints =>
             {
