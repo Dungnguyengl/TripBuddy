@@ -1,29 +1,34 @@
-﻿using Microsoft.AspNetCore.Http.HttpResults;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SpotService.Controllers.Destination;
 using SpotService.Model;
 
 namespace SpotService.Controllers.EvaluateRate
 {
     [Route("api/[controller]")]
-    public class RateController(SpotDbContext context) : ControllerBase
+    [ApiController]
+    public class RateController : ControllerBase
     {
-        private readonly SpotDbContext _context = context;
+        private readonly SpotDbContext _context;
+
+        public RateController(SpotDbContext context)
+        {
+            _context = context;
+        }
+
         [HttpGet]
-        public Task<List<RateDTO>> Get()
+        public async Task<ActionResult<List<RateDTO>>> Get()
         {
             var query = from head in _context.EvlHeads.AsNoTracking()
-                        join rate in _context.EvlRates.AsNoTracking()
-                        on head.EvlKey equals rate.EvlKey
-                        join ePlc in _context.EvlPlcs.AsNoTracking()
-                        on head.EvlKey equals ePlc.EvlKey
-                        join plc in _context.PlcHeads.AsNoTracking()
-                        on ePlc.PlcKey equals plc.PlcKey
-                        join des in _context.DesHeads.AsNoTracking()
-                        on ePlc.DesKey equals des.DesKey
-                        join att in _context.AtrContents.AsNoTracking()
-                        on ePlc.AtrKey equals att.AtrKey
+                        join rate in _context.EvlRates.AsNoTracking() on head.EvlKey equals rate.EvlKey
+                        join ePlc in _context.EvlPlcs.AsNoTracking() on head.EvlKey equals ePlc.EvlKey
+                        join plc in _context.PlcHeads.AsNoTracking() on ePlc.PlcKey equals plc.PlcKey
+                        join des in _context.DesHeads.AsNoTracking() on ePlc.DesKey equals des.DesKey
+                        join att in _context.AtrContents.AsNoTracking() on ePlc.AtrKey equals att.AtrKey
                         select new RateDTO
                         {
                             EvlKey = head.EvlKey,
@@ -36,25 +41,19 @@ namespace SpotService.Controllers.EvaluateRate
                             PlcTitle = plc.PlcName ?? string.Empty
                         };
 
-            return Task.FromResult(query.ToList());
+            return await query.ToListAsync();
         }
 
-
         [HttpGet("Details")]
-        public ActionResult<RateDTO> Details([FromQuery]Guid rateKey)
+        public async Task<ActionResult<RateDTO>> Details([FromQuery] Guid rateKey)
         {
             var query = from head in _context.EvlHeads.AsNoTracking()
                         where head.EvlKey == rateKey
-                        join rate in _context.EvlRates.AsNoTracking()
-                        on head.EvlKey equals rate.EvlKey
-                        join ePlc in _context.EvlPlcs.AsNoTracking()
-                        on head.EvlKey equals ePlc.EvlKey
-                        join plc in _context.PlcHeads.AsNoTracking()
-                        on ePlc.PlcKey equals plc.PlcKey
-                        join des in _context.DesHeads.AsNoTracking()
-                        on ePlc.DesKey equals des.DesKey
-                        join att in _context.AtrContents.AsNoTracking()
-                        on ePlc.AtrKey equals att.AtrKey
+                        join rate in _context.EvlRates.AsNoTracking() on head.EvlKey equals rate.EvlKey
+                        join ePlc in _context.EvlPlcs.AsNoTracking() on head.EvlKey equals ePlc.EvlKey
+                        join plc in _context.PlcHeads.AsNoTracking() on ePlc.PlcKey equals plc.PlcKey
+                        join des in _context.DesHeads.AsNoTracking() on ePlc.DesKey equals des.DesKey
+                        join att in _context.AtrContents.AsNoTracking() on ePlc.AtrKey equals att.AtrKey
                         select new RateDTO
                         {
                             EvlKey = head.EvlKey,
@@ -67,47 +66,47 @@ namespace SpotService.Controllers.EvaluateRate
                             PlcTitle = plc.PlcName ?? string.Empty
                         };
 
-            if (query.Any())
-            {
-                return Ok(query);
-            }
-            else return NotFound();
+            var result = await query.FirstOrDefaultAsync();
+            if (result == null) return NotFound();
+
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<RateDTO> Create([FromBody] CRateDTO rateDTO)
+        public async Task<ActionResult<RateDTO>> Create([FromBody] CRateDTO rateDTO)
         {
+            /*
+            var userId = User.FindFirstValue("UserId");
+            if (string.IsNullOrEmpty(userId) || !Guid.TryParse(userId, out var picKey))
+            {
+                return BadRequest("Invalid or missing user ID.");
+            }*/
+
             if (rateDTO == null)
             {
-                throw new Exception(nameof(Create) + " Model is null or invalid");
+                return BadRequest("Invalid rate data.");
             }
 
-            var place = _context.PlcHeads.Where(item => item.PlcKey == rateDTO.PlcKey)
-                                         .AsNoTracking()                         
-                                         .FirstOrDefault()
-                                         ?? throw new NullReferenceException();
+            var place = await _context.PlcHeads.AsNoTracking().FirstOrDefaultAsync(p => p.PlcKey == rateDTO.PlcKey);
+            if (place == null) return NotFound("Place not found.");
 
-            var attraction = _context.AtrContents.Where(item => item.AtrKey == place.AtrKey)
-                                                 .AsNoTracking()
-                                                 .FirstOrDefault()
-                                                 ?? throw new NullReferenceException();
-            
-            var destination = _context.DesHeads.Where(item => item.DesKey == place.DesKey)
-                                               .AsNoTracking()
-                                               .FirstOrDefault()
-                                               ?? throw new NullReferenceException();
+            var attraction = await _context.AtrContents.AsNoTracking().FirstOrDefaultAsync(a => a.AtrKey == place.AtrKey);
+            var destination = await _context.DesHeads.AsNoTracking().FirstOrDefaultAsync(d => d.DesKey == place.DesKey);
+
+            if (attraction == null || destination == null) return NotFound("Related attraction or destination not found.");
 
             var rateHead = new EvlHead
             {
                 EvlContent = rateDTO.EvlDescription,
                 EvlTitle = rateDTO.EvlTitle,
                 EvlKey = Guid.NewGuid(),
-                PicKey = rateDTO.PicKey
+                PicKey = Guid.NewGuid()
             };
 
-            var rate = new EvlRate { 
+            var rate = new EvlRate
+            {
                 EvlKey = rateHead.EvlKey,
-                Rate = rateDTO.Rate,
+                Rate = rateDTO.Rate
             };
 
             var ratePlace = new EvlPlc
@@ -116,7 +115,7 @@ namespace SpotService.Controllers.EvaluateRate
                 DesKey = destination.DesKey,
                 AtrKey = attraction.AtrKey,
                 PlcKey = place.PlcKey,
-                PlcContent = place.PlcName ?? string.Empty,
+                PlcContent = place.PlcName ?? string.Empty
             };
 
             try
@@ -126,9 +125,9 @@ namespace SpotService.Controllers.EvaluateRate
                 _context.EvlPlcs.Add(ratePlace);
                 await _context.SaveChangesAsync();
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new Exception("Error in create Review");
+                return StatusCode(500, "An error occurred while creating the review.");
             }
 
             var returnDTO = new RateDTO
@@ -143,7 +142,7 @@ namespace SpotService.Controllers.EvaluateRate
                 PlcTitle = place.PlcName ?? string.Empty
             };
 
-            return returnDTO;
+            return CreatedAtAction(nameof(Details), new { rateKey = returnDTO.EvlKey }, returnDTO);
         }
     }
 }

@@ -17,5 +17,12 @@ namespace WebApi.Controllers
             var result = await _internalService.GetAsync<DetailPlaceDto>(ServiceType.Spot, query, "Place/Details");
             return result;
         }
+
+        [HttpGet("DropDown")]
+        public async Task<Response<DropdownPlaceDTO>> GetDropDownMenu()
+        {
+            var result = await _internalService.GetAsync<DropdownPlaceDTO>(ServiceType.Spot, "Place/InitPlaceData");
+            return result;
+        }
     }
 }

@@ -16,7 +16,6 @@
     {
         public string EvlTitle { get; set; }
         public string EvlDescription { get; set; }
-        public Guid PicKey { get; set; }
         public int Rate { get; set; }
         public Guid PlcKey { get; set; }
     }
