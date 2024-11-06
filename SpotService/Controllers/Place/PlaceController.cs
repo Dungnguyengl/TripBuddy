@@ -1,6 +1,8 @@
 ﻿using CommonService.Exceptions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
+using SpotService.Controllers.Destination;
 using SpotService.Model;
 
 namespace SpotService.Controllers.Place
@@ -11,7 +13,7 @@ namespace SpotService.Controllers.Place
         private readonly SpotDbContext _context = context;
 
         [HttpGet("Details")]
-        public ActionResult<PlaceDTO> Details([FromQuery]Guid key)
+        public ActionResult<PlaceDTO> Details([FromQuery] Guid key)
         {
             var query = from head in _context.PlcHeads.AsNoTracking()
                         where head.PlcKey == key
@@ -35,7 +37,7 @@ namespace SpotService.Controllers.Place
         }
 
         [HttpGet("Search")]
-        public ActionResult<List<PlaceDTO>> Search([FromQuery]string search)
+        public ActionResult<List<PlaceDTO>> Search([FromQuery] string search)
         {
             search = search.ToUpper();
 
@@ -185,6 +187,74 @@ namespace SpotService.Controllers.Place
             return placeDTO;
         }
 
+        [HttpDelete]
+        public async Task Delete([FromBody] Guid? placeKey)
+        {
+            if (placeKey == null)
+            {
+                throw new Exception(nameof(Delete) + "Place key is null or invalid!");
+            }
+
+            var existPlace = await _context.PlcHeads.FirstOrDefaultAsync(plc => plc.PlcKey == placeKey);
+
+            if (existPlace == null)
+            {
+                throw new Exception(nameof(Delete) + "Place is not found!");
+            }
+
+            try
+            {
+                _context.PlcHeads.Remove(existPlace);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in Delete Place", ex);
+            }
+        }
+
+        [HttpGet("InitPlaceData")]
+        public async Task<ActionResult<List<DropdownPlaceDTO>>> GetInitDropdownData()
+        {
+            try
+            {
+                var result = await _context.DesHeads.AsNoTracking()
+                     .Join(
+                         _context.PlcHeads.AsNoTracking(),
+                         des => des.DesKey,
+                         plc => plc.DesKey,
+                        (des, plc) => new
+                        {
+                            des.DesKey,
+                            des.DesName,
+                            plc.PlcKey,
+                            plc.PlcName
+                        }
+                     )
+                     .GroupBy(value => value.DesKey)
+                     .Select(gr => new DropdownPlaceDTO
+                     {
+                         Destination = new DesKeyValueDTO
+                         {
+                             DesKey = gr.Key,
+                             DesName = gr.First().DesName,
+                         },
+                         Places = gr.Select(item => new PlaceKeyValueDTO
+                         {
+                             PlcKey = item.PlcKey,
+                             PlcName = item.PlcName
+                         }).ToList()
+
+                     })
+                     .ToListAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in get init dropdown place", ex);
+            }
+        }
 
     }
 }

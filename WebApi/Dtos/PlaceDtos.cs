@@ -14,4 +14,26 @@
         public double Latitude { get; set; }
         public string PicLink { get; set; }
     }
+
+    public class DropdownPlaceDTO
+    {
+        public DesKeyValueDTO Destination { get; set; }
+        public List<PlaceKeyValueDTO> Places { get; set; }
+    }
+    public class DesKeyValueDTO
+    {
+        public Guid DesKey { get; set; }
+        public string? DesName { get; set; }
+    }
+
+    public class PlaceKeyValueDTO
+    {
+        public Guid PlcKey { get; set; }
+        public string? PlcName { get; set; }
+    }
+
+    public class SearchPlaceDto : SearchQueryBase
+    {
+
+    }
 }
