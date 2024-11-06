@@ -20,4 +20,13 @@ public partial class TripHead
 
     [Column("END_DATE")]
     public DateTime? EndDate { get; set; }
+
+    [Column("PIC_KEY")]
+    public Guid PicKey { get; set; }
+
+    [Column("IS_VISITED")]
+    public bool IsVisited { get; set; }
+
+    [Column("IS_DELETED")]
+    public bool IsDeleted { get; set; }
 }
