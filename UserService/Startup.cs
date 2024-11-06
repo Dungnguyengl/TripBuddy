@@ -1,11 +1,10 @@
-﻿using CommonService.Exceptions;
-using CommonService.RPC;
-using CommonService.Services;
+﻿using CommonService.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Primitives;
-using Steeltoe.Discovery.Client;
-using WebApi.Middlewares;
+using UserService.Models;
+using UserService.Services;
 
-namespace WebApi
+namespace UserService
 {
     public class Startup(IConfiguration configuration)
     {
@@ -13,52 +12,36 @@ namespace WebApi
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddHttpContextAccessor();
+            services.AddDbContext<UserServiceDbContext>(ops =>
+            {
+                ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
+            });
 
-            services.AddDiscoveryClient(Configuration);
-            services.AddScoped<IInternalService, InternalService>();
+            services.AddControllers();
 
-            services.AddControllers()
-                .AddNewtonsoftJson(cfg =>
-                {
-
-                });
+            services.AddSingleton<RabbitMQService>();
+            services.AddSingleton<UserRpcService>();
+            services.AddScoped<HandleUserService>();
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
-
-            services.AddSingleton<RabbitMQService>();
-            services.AddSingleton<RpcClient>();
-            services.AddScoped<FileProviderService>();
-            services.AddCors(options =>
-            {
-                options.AddPolicy(name: "AllowSpecificOrigins",
-                    policy =>
-                    {
-                        policy.AllowAnyOrigin()
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                    });
-            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
+            using var scope = app.ApplicationServices.CreateScope();
+            var servces = scope.ServiceProvider;
+            //servces.GetRequiredService<ImageRpcService>();
+
             if (env.IsDevelopment())
             {
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
-            app.UseCors("AllowSpecificOrigins");
-
-            app.UseCustomeHandleException();
             app.UseHttpsRedirection();
 
             app.UseRouting();
-            app.UseCustomAuthentication();
-            app.UseCustomeRequest();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();

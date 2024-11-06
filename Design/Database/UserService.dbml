@@ -4,66 +4,96 @@ Project Tripbuddy {
 }
 
 Table USER.USER_HEAD {
-    USER_ID uniqueidentifier [pk]
+    USER_KEY uniqueidentifier
     FIRST_NAME nvarchar(20)
     LAST_NAME nvarchar(20)
     EMAIL nvarchar(255)
     PHONE_NUMBER nvarchar(20)
-    LOCATION_ID uniqueidentifier
+    LOCATION_KEY uniqueidentifier
     LOCATION_NAME nvarchar(255)
     DOB datetime2
-    PIC_ID uniqueidentifier
+    PIC_KEY uniqueidentifier
     IS_ACTIVIE bit [default: 0]
+
+    indexes {
+      (USER_KEY) [pk]
+      (FIRST_NAME, LAST_NAME)
+    }
 }   
 
 Table USER.USER_SPOT {
-    USER_ID uniqueidentifier [unique, not null]
+    USER_KEY uniqueidentifier [unique, not null]
     REWARD_POINT bigint [default: 0]
     NO_TRIP bigint [default: 0, note: 'Number of trip']
     NO_PLACE bigint [default: 0, note: 'Number of place']
     RATING smallint [default: 0, note: "Average rating from user's review"]
+
+    indexes {
+      (USER_KEY) [unique]
+    }
 }
 
 Ref {
-  USER.USER_SPOT.USER_ID - USER.USER_HEAD.USER_ID
+  USER.USER_SPOT.USER_KEY - USER.USER_HEAD.USER_KEY
 }
 
 Table SPOT.ATR_HEAD {
-  ATR_ID uniqueidentifier [pk]
-  DESCRIPTION nvarchar
+  ATR_KEY uniqueidentifier
+  DESCRIPTION nvarchar(max)
   CONTITNENT nvarchar(5)
   SUB_CONTITNENT nvarchar(5)
   COUNTRY nvarchar(50)
-  PIC_ID uniqueidentifier
+  PIC_KEY uniqueidentifier
+
+  indexes {
+    (ATR_KEY) [pk]
+    (CONTITNENT) [type: btree]
+    (CONTITNENT, SUB_CONTITNENT) [type: btree]
+  }
 }
 
 Table SPOT.DES_HEAD {
-  DES_ID uniqueidentifier [pk]
-  ATR_ID uniqueidentifier [not null]
+  DES_KEY uniqueidentifier
+  ATR_KEY uniqueidentifier [not null]
   DES_NAME nvarchar(50)
-  DESCRIPTION nvarchar
-  PIC_ID uniqueidentifier
+  DESCRIPTION nvarchar(max)
+  PIC_KEY uniqueidentifier
   NO_VISTED int [default: 0, note: 'Number of user add this description into their schedule']
+
+  indexes {
+    (DES_KEY) [pk]
+    (ATR_KEY)
+  }
 }
 
 Table SPOT.PLC_HEAD {
-  PLC_ID uniqueidentifier [pk]
-  ATR_ID uniqueidentifier [not null]
-  DES_ID uniqueidentifier [not null]
+  PLC_KEY uniqueidentifier
+  ATR_KEY uniqueidentifier [not null]
+  DES_KEY uniqueidentifier [not null]
   PLC_NAME nvarchar(50)
-  DESCRIPTION nvarchar
-  LONGITUDE double
-  LATITUDE double
-  PIC_ID uniqueidentifier
+  DESCRIPTION nvarchar(max)
+  LONGITUDE float
+  LATITUDE float
+  PIC_KEY uniqueidentifier
+  
+  indexes {
+    (PLC_KEY) [pk]
+    (ATR_KEY, DES_KEY)
+  }
 }
 
 Table SPOT.ATR_CONTENT {
-  CONTENT_ID uniqueidentifier [pk]
-  ATR_ID uniqueidentifier [not null]
-  DES_ID uniqueidentifier [not null]
+  CONTENT_KEY uniqueidentifier
+  ATR_KEY uniqueidentifier [not null]
+  DES_KEY uniqueidentifier [not null]
   CONTENT_TYPE nvarchar(5)
   TITLE nvarchar(100)
-  CONTENT nvarchar
+  CONTENT nvarchar(max)
+
+  indexes {
+    (CONTENT_KEY) [pk]
+    (ATR_KEY, DES_KEY)
+  }
 }
 
 Table SPOT.CONSTANT {
@@ -73,22 +103,160 @@ Table SPOT.CONSTANT {
 }
 
 Ref {
-  SPOT.ATR_HEAD.ATR_ID > SPOT.DES_HEAD.ATR_ID
+  SPOT.ATR_HEAD.ATR_KEY > SPOT.DES_HEAD.ATR_KEY
 }
 
 Ref {
-  SPOT.ATR_HEAD.ATR_ID > SPOT.PLC_HEAD.ATR_ID
+  SPOT.ATR_HEAD.ATR_KEY > SPOT.PLC_HEAD.ATR_KEY
 }
 
 Ref {
-  SPOT.DES_HEAD.DES_ID > SPOT.PLC_HEAD.DES_ID
+  SPOT.DES_HEAD.DES_KEY > SPOT.PLC_HEAD.DES_KEY
 }
 
 Ref {
-  SPOT.ATR_HEAD.ATR_ID > SPOT.ATR_CONTENT.ATR_ID
+  SPOT.ATR_HEAD.ATR_KEY > SPOT.ATR_CONTENT.ATR_KEY
 }
 
 Ref {
-  SPOT.DES_HEAD.DES_ID > SPOT.ATR_CONTENT.DES_ID
+  SPOT.DES_HEAD.DES_KEY > SPOT.ATR_CONTENT.DES_KEY
 }
 
+table EVALUATE.EVL_HEAD {
+  EVL_KEY uniqueidentifier [pk]
+  EVL_TITLE nvarchar(100)
+  EVL_CONTENT nvarchar(max)
+  PIC_KEY uniqueidentifier
+}
+
+Table EVALUATE.EVL_RATE {
+  EVL_KEY uniqueidentifier
+  RATE smallint
+  indexes {
+    (EVL_KEY) [type: hash]
+  }
+}
+
+Table EVALUATE.EVL_PLC {
+  EVL_KEY uniqueidentifier
+  ATR_KEY uniqueidentifier
+  DES_KEY uniqueidentifier
+  PLC_KEY uniqueidentifier
+  PLC_CONENT nvarchar(100) [note: 'Specific location']
+
+  indexes {
+    (EVL_KEY) [type: hash]
+    (ATR_KEY, DES_KEY, PLC_KEY)
+  }
+}
+
+Ref {
+  EVALUATE.EVL_HEAD.EVL_KEY - EVALUATE.EVL_PLC.EVL_KEY
+}
+
+Ref {
+  EVALUATE.EVL_HEAD.EVL_KEY > EVALUATE.EVL_RATE.EVL_KEY
+}
+
+Table TRIPPER.TRIP_HEAD {
+  TRIP_KEY uniqueidentifier
+  START_DATE datetime2
+  END_DATE datetime2
+
+  indexes {
+    (TRIP_KEY) [pk]
+    (START_DATE) [type: btree]
+    (START_DATE, END_DATE) [type: btree]
+  }
+}
+
+Table TRIPPER.TRIP_PLC {
+  TRIP_KEY uniqueidentifier
+  REFERENT_KEY uniqueidentifier
+  PLC_TYPE TRIPPER.PLC_TYPE
+  PLC_CONTENT nvarchar(100)
+}
+
+Ref {
+  TRIPPER.TRIP_HEAD.TRIP_KEY > TRIPPER.TRIP_PLC.TRIP_KEY
+}
+
+Enum TRIPPER.PLC_TYPE {
+  "Atraction"
+  "Destination"
+  "Place"
+}
+
+Table AUDIT.AUDIT_HEAD {
+  REFERENCE_KEY uniqueidentifier
+  SRC AUDIT.SRC
+  INS_BY uniqueidentifier
+  INS_DATE datetime2
+  UPD_BY uniqueidentifier
+  UPD_dATE datetime2
+  
+  indexes {
+    (REFERENCE_KEY)
+    (INS_BY)
+    (INS_BY, INS_DATE)
+    (UPD_BY)
+    (UPD_BY, UPD_dATE)
+  }
+}
+
+Table AUDIT.AUDIT_LOG {
+  REFERENCE_KEY uniqueidentifier
+  SRC AUDIT.SRC
+  REASON AUDIT.REASON
+  INS_BY uniqueidentifier
+  INS_DATE datetime2
+  UPD_BY uniqueidentifier
+  UPD_dATE datetime2
+  
+  indexes {
+    (REFERENCE_KEY)
+    (REFERENCE_KEY, REASON)
+    (INS_BY)
+    (INS_BY, INS_DATE)
+    (UPD_BY)
+    (UPD_BY, UPD_dATE)
+  }
+}
+
+Enum AUDIT.SRC {
+  "USER"
+  "ATR"
+  "DES"
+  "PLC"
+  "TRIP"
+  "EVL"
+  "EVL_RATE"
+  "MAIL"
+  "NOTI"
+}
+
+Enum AUDIT.REASON {
+  "CREATE"
+  "UPDATE"
+  "DELETE"
+}
+
+Table MEDIA.MD_HEAD {
+  MD_KEY uniqueidentifier
+  MD_TYPE MEDIA.MD_TYPE
+  MD_LINK nvarchar
+
+  indexes {
+    (MD_KEY) [pk]
+    (MD_TYPE) [type: btree]
+  }
+}
+
+Table MEDIA.MD_DETAIL {
+  MD_TYPE MEDIA.MD_TYPE
+  MD_EXTENTION nvarchar(50)
+}
+
+Enum MEDIA.MD_TYPE {
+  "IMAGE"
+}

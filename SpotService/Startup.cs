@@ -10,7 +10,6 @@ using SpotService.Controllers.Destination;
 using SpotService.Controllers.Place;
 using SpotService.Controllers.Story;
 using SpotService.Model;
-using Steeltoe.Discovery;
 using Steeltoe.Discovery.Client;
 
 namespace SpotService
