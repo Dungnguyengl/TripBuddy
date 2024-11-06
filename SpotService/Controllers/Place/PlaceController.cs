@@ -185,6 +185,31 @@ namespace SpotService.Controllers.Place
             return placeDTO;
         }
 
+        [HttpDelete]
+        public async Task Delete([FromBody] Guid? placeKey)
+        {
+            if (placeKey == null)
+            {
+                throw new Exception(nameof(Delete) + "Place key is null or invalid!");
+            }
+
+            var existPlace = await _context.PlcHeads.FirstOrDefaultAsync(plc => plc.PlcKey == placeKey);
+
+            if (existPlace == null)
+            {
+                throw new Exception(nameof(Delete) + "Place is not found!");
+            }
+
+            try
+            {
+                _context.PlcHeads.Remove(existPlace);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error in Delete Place", ex);
+            }
+        }
 
     }
 }
