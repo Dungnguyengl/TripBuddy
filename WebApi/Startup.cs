@@ -1,4 +1,5 @@
 ﻿using CommonService.Exceptions;
+using CommonService.RPC;
 using CommonService.Services;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Discovery.Client;
@@ -26,6 +27,10 @@ namespace WebApi
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
+
+            services.AddSingleton<RabbitMQService>();
+            services.AddSingleton<RpcClient>();
+            services.AddScoped<FileProviderService>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

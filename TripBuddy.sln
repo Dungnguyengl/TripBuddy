@@ -24,7 +24,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TripperService", "TripServi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpotService", "SpotService\SpotService.csproj", "{A935B3D6-FEFB-403F-BFA6-D5464B916AE9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigurationService", "ConfigurationService\ConfigurationService\ConfigurationService.csproj", "{5332FF5C-1BA4-45DA-9F6A-C36FD6682194}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConfigurationService", "ConfigurationService\ConfigurationService\ConfigurationService.csproj", "{5332FF5C-1BA4-45DA-9F6A-C36FD6682194}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ImageService", "ImageService\ImageService.csproj", "{817B467C-1FDE-416F-B9E1-0E4625DA43FC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -68,6 +70,10 @@ Global
 		{5332FF5C-1BA4-45DA-9F6A-C36FD6682194}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5332FF5C-1BA4-45DA-9F6A-C36FD6682194}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5332FF5C-1BA4-45DA-9F6A-C36FD6682194}.Release|Any CPU.Build.0 = Release|Any CPU
+		{817B467C-1FDE-416F-B9E1-0E4625DA43FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{817B467C-1FDE-416F-B9E1-0E4625DA43FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{817B467C-1FDE-416F-B9E1-0E4625DA43FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{817B467C-1FDE-416F-B9E1-0E4625DA43FC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

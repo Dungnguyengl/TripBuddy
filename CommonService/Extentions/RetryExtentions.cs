@@ -1,8 +1,10 @@
-﻿namespace CommonService.Extentions
+﻿using Microsoft.Extensions.Logging;
+
+namespace CommonService.Extentions
 {
     public static class RetryExtentions
     {
-        public static void Retry(Action func, int times = 3, int wating = 2000)
+        public static void Retry(Action func, int times = 3, int wating = 2000, ILogger? logger = null)
         {
             ArgumentNullException.ThrowIfNull(func, $"{nameof(RetryExtentions)}:{nameof(Retry)}");
 
@@ -12,12 +14,14 @@
                 try
                 {
                     func.Invoke();
+                    return;
                 }
                 catch
                 (Exception e)
                 {
                     if (++runningTime == times)
                     {
+                        logger?.LogWarning(e, "Occus Excption in the {time} times", runningTime);
                         throw;
                     }
                     Task.Delay(runningTime).Wait();
@@ -25,7 +29,7 @@
             }
         }
 
-        public static TResult Retry<TResult>(Func<TResult> func, int times = 3, int wating = 2000)
+        public static TResult Retry<TResult>(Func<TResult> func, int times = 3, int wating = 2000, ILogger? logger = null)
         {
             ArgumentNullException.ThrowIfNull(func, $"{nameof(RetryExtentions)}:{nameof(Retry)}");
 
@@ -41,6 +45,7 @@
                 {
                     if (++runningTime < times)
                     {
+                        logger?.LogWarning(e, "Occus Excption in the {time} times", runningTime);
                         Task.Delay(wating).Wait();
                         continue;
                     }

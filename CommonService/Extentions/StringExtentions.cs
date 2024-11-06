@@ -23,6 +23,15 @@ namespace CommonService.Extentions
             return int.TryParse(str, out var val) ? val : null;
         }
 
+        public static int ToInt(this string? str)
+        {
+            if (string.IsNullOrEmpty(str))
+            {
+                return default;
+            }
+            return int.TryParse(str, out var val) ? val : default;
+        }
+
         public static byte[] ConvertStringToByteArray(this string input)
         {
             return Encoding.UTF8.GetBytes(input);

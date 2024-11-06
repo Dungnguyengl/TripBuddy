@@ -23,3 +23,12 @@ services:
     container_name: eureka-server
     ports:
       - 8761:8761
+
+  image:
+    build:
+      context: .
+      dockerfile: ImageService/Dockerfile
+    container_name: ImageService
+    environment:
+      - RABBITMQ_HOST=RABBITMQ_HOST
+      - RABBITMQ_PORT=RABBITMQ_PORT

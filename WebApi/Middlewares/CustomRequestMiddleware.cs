@@ -13,22 +13,22 @@ namespace WebApi.Middlewares
 
         public async Task Invoke(HttpContext context)
         {
-            // Store the original response body stream
-            var originalBodyStream = context.Response.Body;
-            using var newBodyStream = new MemoryStream();
-            context.Response.Body = newBodyStream;
             try
             {
                 await _next(context);
+                // Store the original response body stream
+                var originalBodyStream = context.Response.Body;
+                using var newBodyStream = new MemoryStream();
+                context.Response.Body = newBodyStream;
                 newBodyStream.Seek(0, SeekOrigin.Begin);
                 var responseBody = await new StreamReader(newBodyStream).ReadToEndAsync();
                 newBodyStream.Seek(0, SeekOrigin.Begin);
                 var response = JsonConvert.DeserializeObject<Response<object>>(responseBody);
                 var odataResponse = JsonConvert.DeserializeObject<ODataRespose<object>>(responseBody);
-                context.Response.Clear();
-                context.Response.StatusCode = (int?)response?.Code ?? ((int?)odataResponse?.Code) ?? 500;
                 if (response?.Content != null)
                 { 
+                    context.Response.Clear();
+                    context.Response.StatusCode = (int?)response?.Code ?? ((int?)odataResponse?.Code) ?? 200;
                     context.Response.ContentType = "application/json";
                     var settings = new JsonSerializerSettings
                     {
@@ -37,8 +37,10 @@ namespace WebApi.Middlewares
                     var json = JsonConvert.SerializeObject(response.Content, settings);
                     await context.Response.WriteAsync(json); 
                 }
-                if (odataResponse?.Value != null)
+                else if (odataResponse?.Value != null)
                 {
+                    context.Response.Clear();
+                    context.Response.StatusCode = (int?) response?.Code ?? ((int?) odataResponse?.Code) ?? 200;
                     context.Response.ContentType = "application/json";
                     var settings = new JsonSerializerSettings
                     {
@@ -52,11 +54,15 @@ namespace WebApi.Middlewares
                     var json = JsonConvert.SerializeObject(obj, settings);
                     await context.Response.WriteAsync(json);
                 }
+                else
+                {
+                    newBodyStream.Seek(0, SeekOrigin.Begin);
+                    await newBodyStream.CopyToAsync(originalBodyStream);
+                }
             }
             catch
             {
-                newBodyStream.Seek(0, SeekOrigin.Begin);
-                await newBodyStream.CopyToAsync(originalBodyStream);
+                throw;
             }
 
         }
