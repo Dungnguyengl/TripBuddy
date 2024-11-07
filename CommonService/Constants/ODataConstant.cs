@@ -68,7 +68,7 @@ namespace CommonService.Constants
         {
             if (Condition == ODataConstants.CONTAIN)
                 return $"contains({Field}, '{Value}')";
-            var value = (Value is string) ? $"'{Value}'" : Value;
+            var value = (Value is string) ? $"{Value}" : Value;
             return $"{Field} {Condition} {value}";
         }
     }

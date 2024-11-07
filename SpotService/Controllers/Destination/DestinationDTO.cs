@@ -28,5 +28,7 @@ namespace SpotService.Controllers.Destination
     {
         public Guid DesKey { get; set; }
         public string? DesName { get; set; }
+
+        public Guid AtrKey { get; set; }
     }
 }

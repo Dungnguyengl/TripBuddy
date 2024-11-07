@@ -40,7 +40,7 @@ namespace SpotService.Controllers.Destination
                         };
             if (query.Any())
             {
-                return Ok(query);
+                return Ok(query.FirstOrDefault());
             }
             else return NotFound();
         }
@@ -76,10 +76,13 @@ namespace SpotService.Controllers.Destination
         public ActionResult<DesKeyValueDTO> GetDesKeyValue()
         {
             var keyValuePairs = from des in _context.DesHeads.AsNoTracking()
+                                join atr in _context.AtrHeads.AsNoTracking()
+                                     on des.AtrKey equals atr.AtrKey
                                 select new DesKeyValueDTO
                                 {
                                     DesKey = des.DesKey,
                                     DesName = des.DesName,
+                                    AtrKey = atr.AtrKey,
                                 };
 
             return Ok(keyValuePairs);

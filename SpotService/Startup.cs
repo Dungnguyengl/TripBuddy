@@ -1,4 +1,5 @@
 ﻿using CommonService.Exceptions;
+using CommonService.RPC;
 using CommonService.Services;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -38,12 +39,19 @@ namespace SpotService
                 ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
             });
 
+            services.AddDbContext<EvaluateDbContext>(ops =>
+            {
+                ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();
 
             services.AddDiscoveryClient(Configuration);
             services.AddScoped<IInternalService, InternalService>();
+            services.AddSingleton<RabbitMQService>();
+            services.AddSingleton<RpcClient>();
         }
 
         public IEdmModel GetEdmModel()

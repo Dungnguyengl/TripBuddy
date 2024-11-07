@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using CommonService.RPC;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
@@ -10,9 +11,10 @@ using SpotService.Model;
 
 namespace SpotService.Controllers.Odata
 {
-    public class OdataController(SpotDbContext context) : ODataController
+    public class OdataController(SpotDbContext context, RpcClient rpcClient) : ODataController
     {
         private readonly SpotDbContext _context = context;
+        private readonly RpcClient _rpcClient = rpcClient;
 
         [EnableQuery]
         [HttpGet("api/atraction")]
@@ -79,17 +81,17 @@ namespace SpotService.Controllers.Odata
             var stories = _context.AtrContents.AsNoTracking();
 
             var query = from story in stories
-                           join atraction in atractions on story.AtrKey equals atraction.AtrKey
-                           join destination in destinations on story.DesKey equals destination.DesKey
-                           select new StoryDTO
-                           {
-                               StoryKey = story.ContentKey,
-                               AtrKey = atraction.AtrKey,
-                               Country = atraction.Country,
-                               Destination = destination.DesName,
-                               Title = story.Title,
-                               Content = story.Content
-                           };
+                        join atraction in atractions on story.AtrKey equals atraction.AtrKey
+                        join destination in destinations on story.DesKey equals destination.DesKey
+                        select new StoryDTO
+                        {
+                            StoryKey = story.ContentKey,
+                            AtrKey = atraction.AtrKey,
+                            Country = atraction.Country,
+                            Destination = destination.DesName,
+                            Title = story.Title,
+                            Content = story.Content
+                        };
 
             return Ok(query);
         }
