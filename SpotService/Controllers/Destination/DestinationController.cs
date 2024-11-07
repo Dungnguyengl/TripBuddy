@@ -40,7 +40,7 @@ namespace SpotService.Controllers.Destination
                         };
             if (query.Any())
             {
-                return Ok(query);
+                return Ok(query.FirstOrDefault());
             }
             else return NotFound();
         }

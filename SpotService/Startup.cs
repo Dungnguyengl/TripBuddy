@@ -1,4 +1,5 @@
 ﻿using CommonService.Exceptions;
+using CommonService.RPC;
 using CommonService.Services;
 using Microsoft.AspNetCore.OData;
 using Microsoft.EntityFrameworkCore;
@@ -49,6 +50,8 @@ namespace SpotService
 
             services.AddDiscoveryClient(Configuration);
             services.AddScoped<IInternalService, InternalService>();
+            services.AddSingleton<RabbitMQService>();
+            services.AddSingleton<RpcClient>();
         }
 
         public IEdmModel GetEdmModel()

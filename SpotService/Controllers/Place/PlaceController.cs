@@ -1,4 +1,5 @@
 ﻿using CommonService.Exceptions;
+using CommonService.RPC;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
@@ -8,9 +9,10 @@ using SpotService.Model;
 namespace SpotService.Controllers.Place
 {
     [Route("api/[controller]")]
-    public class PlaceController(SpotDbContext context) : ControllerBase
+    public class PlaceController(SpotDbContext context, RpcClient rpcClient) : ControllerBase
     {
         private readonly SpotDbContext _context = context;
+        private readonly RpcClient _rpcClient = rpcClient;
 
         [HttpGet("Details")]
         public ActionResult<PlaceDTO> Details([FromQuery] Guid key)
@@ -33,7 +35,8 @@ namespace SpotService.Controllers.Place
             {
                 return Ok(query.FirstOrDefault());
             }
-            else throw new NotFoundException($"Place: {key}");
+            else
+                throw new NotFoundException($"Place: {key}");
         }
 
         [HttpGet("Search")]
