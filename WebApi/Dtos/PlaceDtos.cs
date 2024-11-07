@@ -24,6 +24,7 @@
     public class DesKeyValueDTO
     {
         public Guid DesKey { get; set; }
+        public Guid AtrKey { get; set; }
         public string? DesName { get; set; }
     }
 
