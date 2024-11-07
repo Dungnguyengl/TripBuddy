@@ -38,6 +38,11 @@ namespace SpotService
                 ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
             });
 
+            services.AddDbContext<EvaluateDbContext>(ops =>
+            {
+                ops.UseSqlServer(Configuration.GetConnectionString("mssql"));
+            });
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen();

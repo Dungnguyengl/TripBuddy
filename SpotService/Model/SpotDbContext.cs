@@ -22,9 +22,6 @@ public partial class SpotDbContext : DbContext
     public virtual DbSet<DesHead> DesHeads { get; set; }
 
     public virtual DbSet<PlcHead> PlcHeads { get; set; }
-    public virtual DbSet<EvlHead> EvlHeads { get; set; }
-    public virtual DbSet<EvlRate> EvlRates { get; set; }
-    public virtual DbSet<EvlPlc> EvlPlcs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
